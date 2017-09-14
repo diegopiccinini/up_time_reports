@@ -20,10 +20,13 @@ class VpcTest < ActiveSupport::TestCase
   end
 
   test "#update_from_checks" do
+
+    DatabaseCleaner.clean
+
     ufc = Vpc.update_from_checks
     assert ufc[:total]>0
-    assert_equal Vpc.count, ufc[:total]
     assert_equal ( ufc[:created] + ufc[:updated] ), ufc[:total]
+    assert_equal Vpc.count, ufc[:total]
   end
 
 end

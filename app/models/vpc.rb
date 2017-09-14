@@ -23,7 +23,13 @@ class Vpc < ApplicationRecord
       vpc.resolution       = check.resolution
       vpc.status           = check.status
       vpc.check_type       = check.type
-      vpc.data             = { tags: check.tags }.merge(vpc.data || {} )
+      vpc.data             = { tags: check.tags }.merge(vpc.data || {} ) if check.tags
+
+      unless vpc.customer
+        customer = Customer.find_or_create_by name: check.name
+        vpc.customer = customer
+      end
+
       vpc.save
 
     end
