@@ -1,4 +1,5 @@
 class Vpc < ApplicationRecord
+  acts_as_paranoid
   belongs_to :customer
 
   def self.checks
