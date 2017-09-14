@@ -20,8 +20,8 @@ class VpcTest < ActiveSupport::TestCase
   end
 
   test "#update_from_checks" do
+    Vpc.delete_all
 
-    DatabaseCleaner.clean
 
     ufc = Vpc.update_from_checks
     assert ufc[:total]>0
