@@ -24,11 +24,11 @@ ActiveRecord::Schema.define(version: 20170914165234) do
   end
 
   create_table "global_settings", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.json "data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_global_settings_on_name"
+    t.index ["name"], name: "index_global_settings_on_name", unique: true
   end
 
   create_table "vpcs", force: :cascade do |t|
