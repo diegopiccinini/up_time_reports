@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170914165234) do
+ActiveRecord::Schema.define(version: 20170915093009) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,6 +31,45 @@ ActiveRecord::Schema.define(version: 20170914165234) do
     t.index ["name"], name: "index_global_settings_on_name", unique: true
   end
 
+  create_table "outages", force: :cascade do |t|
+    t.string "status"
+    t.datetime "timefrom"
+    t.datetime "timeto"
+    t.bigint "report_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["report_id"], name: "index_outages_on_report_id"
+  end
+
+  create_table "performances", force: :cascade do |t|
+    t.datetime "starttime"
+    t.integer "avgresponse"
+    t.integer "uptime"
+    t.integer "downtime"
+    t.integer "unmonitored"
+    t.bigint "report_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["report_id"], name: "index_performances_on_report_id"
+  end
+
+  create_table "reports", force: :cascade do |t|
+    t.string "resolution"
+    t.string "period"
+    t.date "start_date"
+    t.string "status"
+    t.datetime "from"
+    t.datetime "to"
+    t.json "data"
+    t.bigint "vpc_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_reports_on_deleted_at"
+    t.index ["start_date"], name: "index_reports_on_start_date"
+    t.index ["vpc_id"], name: "index_reports_on_vpc_id"
+  end
+
   create_table "vpcs", force: :cascade do |t|
     t.string "hostname"
     t.datetime "lasterrortime"
@@ -49,5 +88,8 @@ ActiveRecord::Schema.define(version: 20170914165234) do
     t.index ["deleted_at"], name: "index_vpcs_on_deleted_at"
   end
 
+  add_foreign_key "outages", "reports"
+  add_foreign_key "performances", "reports"
+  add_foreign_key "reports", "vpcs"
   add_foreign_key "vpcs", "customers"
 end

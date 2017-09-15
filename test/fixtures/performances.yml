@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  starttime: 2017-09-15 10:27:05
+  avgresponse: 1
+  uptime: 1
+  downtime: 1
+  unmonitored: 1
+  report: one
+
+two:
+  starttime: 2017-09-15 10:27:05
+  avgresponse: 1
+  uptime: 1
+  downtime: 1
+  unmonitored: 1
+  report: two

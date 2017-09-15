@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  status: MyString
+  timefrom: 2017-09-15 10:30:09
+  timeto: 2017-09-15 10:30:09
+  report: one
+
+two:
+  status: MyString
+  timefrom: 2017-09-15 10:30:09
+  timeto: 2017-09-15 10:30:09
+  report: two

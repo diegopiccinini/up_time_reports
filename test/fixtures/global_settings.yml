@@ -1,9 +1,14 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  data: 
+  name: Reports Workflow
+  data:
+    report_states:
+      - ready to get performances
+      - ready to get outages
+      - ready to build the data spreadsheet
 
 two:
-  name: MyString
-  data: 
+  name: Filters
+  data:
+    minimun_downtime: 120
