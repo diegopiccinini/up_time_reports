@@ -12,26 +12,26 @@ class Report < ApplicationRecord
   PERIODS = %w(day week month year)
   RESOLUTIONS =  %w(hour day week month)
 
+  scope :daily, -> (date) { where( period: 'day', start_date: date ) }
+  scope :started, -> (date) { daily(date).where( status: 'start' ) }
+
   def self.server_time
     Pingdom::ServerTime.time
   end
 
-  def self.start( date: , period: )
+  def self.start date
+    date= date.to_date
 
-    raise "#{period} is not a valid period" unless PERIODS.include?(period)
-
-    reports = 0
-
-    self.where( period: period, start_date: date ).delete_all
+    self.daily( date ).delete_all
 
     Vpc.update_from_checks
 
     Vpc.all.each do |vpc|
-      reports+=1 if self.create( vpc: vpc, period: period, start_date: date, resolution: 'hour', status: __method__.to_s )
+      self.create  vpc: vpc, period: 'day', start_date: date, resolution: 'hour', status: 'start' , from: date.to_time, to: ((date + 1).to_time - 1)
     end
 
-    { reports: reports }
   end
+
 
   private
 

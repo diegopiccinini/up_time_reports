@@ -2,6 +2,10 @@ require 'test_helper'
 
 class ReportTest < ActiveSupport::TestCase
 
+  setup do
+    @date = 1.day.ago
+    @period = 'day'
+  end
 
   test "#server_time" do
 
@@ -12,14 +16,12 @@ class ReportTest < ActiveSupport::TestCase
 
   end
 
-  test "#start" do
+  test "Report generators" do
 
-    result=Report.start date: 1.day.ago, period: 'day'
-    assert result[:reports] > 0
-    assert_equal result[:reports] , Report.where( period: 'day', start_date: 1.day.ago, status: 'start' ).count
-    assert_equal result[:reports] , Vpc.count
+    Report.start @date
+    assert Report.started(@date).count > 0
+    assert_equal Report.started(@date).count, Vpc.count
 
   end
-
 
 end
