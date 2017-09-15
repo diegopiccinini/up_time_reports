@@ -22,6 +22,11 @@ class ReportTest < ActiveSupport::TestCase
     assert Report.started(@date).count > 0
     assert_equal Report.started(@date).count, Vpc.count
 
+    Report.save_performance @date
+    assert Report.performance_saved(@date).count > 0
+    assert Report.performance_saved(@date).count < Performance.count
+    assert_equal Report.performance_saved_total(@date).count, Vpc.count
+
   end
 
 end
