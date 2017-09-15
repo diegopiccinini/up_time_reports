@@ -1,17 +1,46 @@
 class Report < ApplicationRecord
+
   acts_as_paranoid
 
   belongs_to :vpc
 
   validates :status, presence: true
   validates :start_date, presence: true
-  validates :period, inclusion: { in: %w(day week month year), message: "%{value} is not a valid period" }
-  validates :resolution, inclusion: { in: %w(hour day week month), message: "%{value} is not a valid resolution" }
+  validate :validate_period
+  validate :validate_resolution
 
+  PERIODS = %w(day week month year)
+  RESOLUTIONS =  %w(hour day week month)
 
   def self.server_time
     Pingdom::ServerTime.time
   end
 
+  def self.start( date: , period: )
+
+    raise "#{period} is not a valid period" unless PERIODS.include?(period)
+
+    reports = 0
+
+    self.where( period: period, start_date: date ).delete_all
+
+    Vpc.update_from_checks
+
+    Vpc.all.each do |vpc|
+      reports+=1 if self.create( vpc: vpc, period: period, start_date: date, resolution: 'hour', status: __method__.to_s )
+    end
+
+    { reports: reports }
+  end
+
+  private
+
+  def validate_period
+    errors.add(:period, "#{period} is not a valid period") unless PERIODS.include?(period)
+  end
+
+  def validate_resolution
+    errors.add(:resolution, "#{resolution} is not a valid resolution") unless RESOLUTIONS.include?(resolution)
+  end
 
 end
