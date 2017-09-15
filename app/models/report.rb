@@ -36,11 +36,11 @@ class Report < ApplicationRecord
   private
 
   def validate_period
-    errors.add(:period, "#{period} is not a valid period") unless PERIODS.include?(period)
+    validate_inclusion :period, PERIODS
   end
 
   def validate_resolution
-    errors.add(:resolution, "#{resolution} is not a valid resolution") unless RESOLUTIONS.include?(resolution)
+    validate_inclusion :resolution, RESOLUTIONS
   end
 
 end
