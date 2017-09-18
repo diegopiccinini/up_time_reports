@@ -7,9 +7,8 @@ one:
   status: MyString
   from: 2017-09-15 10:21:35
   to: 2017-09-15 10:21:35
-  data: 
+  data:
   vpc: one
-  deleted_at: 2017-09-15 10:21:35
 
 two:
   resolution: MyString
@@ -18,6 +17,5 @@ two:
   status: MyString
   from: 2017-09-15 10:21:35
   to: 2017-09-15 10:21:35
-  data: 
+  data:
   vpc: two
-  deleted_at: 2017-09-15 10:21:35

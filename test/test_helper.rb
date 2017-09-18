@@ -35,6 +35,11 @@ class ActiveSupport::TestCase
     stub_pingdom path: performance_path(check_id,from,to), body: '', status: 401
   end
 
+  def stub_outage(check_id:, from:, to:)
+    body=fixtures_json('outage.json.erb')
+    stub_pingdom path: "/summary.outage/#{check_id}?from=#{from}&to=#{to}", body: body
+  end
+
   def stub_pingdom( path:, body: , status: 200)
     stub_request(:get, "https://api.pingdom.com/api/2.0#{path}").
       with(headers: {

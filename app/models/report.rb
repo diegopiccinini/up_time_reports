@@ -9,6 +9,7 @@ class Report < ApplicationRecord
   validate :validate_period
   validate :validate_resolution
   has_many :performances
+  has_many :outages
 
   PERIODS = %w(day week month year)
   RESOLUTIONS =  %w(hour day week month)
@@ -17,13 +18,15 @@ class Report < ApplicationRecord
   scope :started, -> (date) { daily(date).where( status: 'start' ) }
   scope :performance_saved, -> (date) { daily(date).where( status: 'performance saved' ) }
   scope :performance_saved_total, -> (date) { daily(date).where( "status LIKE ?", 'performance saved%' ) }
+  scope :outage_saved, -> (date) { daily(date).where( status: 'outage saved' ) }
+  scope :outage_saved_total, -> (date) { daily(date).where( "status LIKE ?", 'outage saved%' ) }
+
 
   def self.server_time
     Pingdom::ServerTime.time
   end
 
   def self.start date
-    date= date.to_date
 
     self.daily( date ).delete_all
 
@@ -36,11 +39,17 @@ class Report < ApplicationRecord
   end
 
   def self.save_performance date
-    date= date.to_date
-    status='performance saved'
-    started(date).each do |report|
+    step filter_scope: :started, update_method: :update_performance, status: 'performance saved', date: date
+  end
+
+  def self.save_outage date
+    step filter_scope: :performance_saved, update_method: :update_outage, status: 'outage saved', date: date
+  end
+
+  def self.step filter_scope:, update_method: , status: , date:
+    self.send(filter_scope,date).each do |report|
       begin
-        report.update_performance
+        report.send(update_method)
         report.status = status
       rescue
         report.status = status + ' error'
@@ -54,6 +63,14 @@ class Report < ApplicationRecord
     performance=Pingdom::SummaryPerformance.find vpc.id, from: from, to: to, includeuptime: true
     performance.hours.each do |h|
       performances.create starttime: h.starttime, avgresponse: h.avgresponse, uptime: h.uptime, downtime: h.downtime, unmonitored: h.unmonitored
+    end
+  end
+
+  def update_outage
+    outages.delete_all
+    outage=Pingdom::SummaryOutage.find vpc.id, from: from, to: to
+    outage.states.each do |s|
+      outages.create status: s.status, timefrom: s.timefrom, timeto: s.timeto
     end
   end
 

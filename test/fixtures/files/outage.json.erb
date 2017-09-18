@@ -1,0 +1,19 @@
+<%
+  start= Date.yesterday.to_time.to_i
+  final= (Date.today.to_time - 1).to_i
+  status='up'
+
+  collection = []
+  while start<final do
+    timeto=start + rand(12*3600)
+    collection << { status: status, timefrom: start, timeto: timeto }
+    start=timeto
+    status = (%w(up down) - [status]).first
+  end
+%>
+
+{
+  "summary" : {
+    "states" : <%= collection.to_json %>
+  }
+}
