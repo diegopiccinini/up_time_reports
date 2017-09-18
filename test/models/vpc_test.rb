@@ -2,6 +2,10 @@ require 'test_helper'
 
 class VpcTest < ActiveSupport::TestCase
 
+  setup do
+    stub_checks
+  end
+
   test "#checks" do
     checks = Vpc.checks
     check = checks.first
@@ -24,7 +28,7 @@ class VpcTest < ActiveSupport::TestCase
     ufc = Vpc.update_from_checks
     assert ufc[:total]>0
     assert_equal ( ufc[:created] + ufc[:updated] ), ufc[:total]
-    assert_equal Vpc.count - vpcs.size , ufc[:total]
+    assert_equal Vpc.checks.count, ufc[:total]
 
   end
 

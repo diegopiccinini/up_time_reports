@@ -50,6 +50,7 @@ class Report < ApplicationRecord
   end
 
   def update_performance
+    performances.delete_all
     performance=Pingdom::SummaryPerformance.find vpc.id, from: from, to: to, includeuptime: true
     performance.hours.each do |h|
       performances.create starttime: h.starttime, avgresponse: h.avgresponse, uptime: h.uptime, downtime: h.downtime, unmonitored: h.unmonitored

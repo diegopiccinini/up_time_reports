@@ -1,0 +1,25 @@
+<% start= 1.day.ago.to_date.to_time %>
+{
+  "summary" : {
+    "hours" : [
+      <% 24.times do |i| %>
+        <%
+            downtime = rand(1000)
+        downtime = 0 if downtime>600
+        uptime=3600 - downtime
+        unmonitored = rand(100)
+        unmonitored = 0 if  unmonitored>60
+      %>
+
+    {
+      "starttime" : <%= start.to_i + (i*3600) %>,
+      "avgresponse" : <%= rand(500) %> ,
+      "uptime" : <%= uptime %>,
+      "downtime" : <%= downtime %>,
+      "unmonitored" : <%= unmonitored %>
+    }
+      <%= ',' if i<23 %>
+      <% end %>
+    ]
+  }
+}

@@ -3,6 +3,7 @@ class Vpc < ApplicationRecord
   belongs_to :customer
 
   def self.checks
+    Pingdom::Check.params={}
     Pingdom::Check.all
   end
 
