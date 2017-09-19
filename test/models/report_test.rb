@@ -26,7 +26,7 @@ class ReportTest < ActiveSupport::TestCase
     server_time =Report.server_time
 
     assert_kind_of Time, server_time
-    assert (Time.now - server_time) < 1.0
+    assert (Time.now - server_time) < 3
 
   end
 

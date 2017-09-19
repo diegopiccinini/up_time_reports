@@ -6,6 +6,11 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
+  setup do
+    @outage_data = {}
+    @performance_data = {}
+  end
+
   def fixtures_json name
     file =File.join('test','fixtures','files',name)
     if file.end_with?('.erb')
@@ -27,7 +32,7 @@ class ActiveSupport::TestCase
   end
 
   def stub_performance(check_id:,from:,to:)
-    body=fixtures_json('performance.json.erb') if body.nil?
+    body= performance_json(from,to)
     stub_pingdom path: performance_path(check_id,from,to), body: body
   end
 
@@ -36,7 +41,7 @@ class ActiveSupport::TestCase
   end
 
   def stub_outage(check_id:, from:, to:)
-    body=fixtures_json('outage.json.erb')
+    body=outage_json(from, to)
     stub_pingdom path: "/summary.outage/#{check_id}?from=#{from}&to=#{to}", body: body
   end
 
@@ -56,6 +61,67 @@ class ActiveSupport::TestCase
 
   def performance_path check_id, from, to
     "/summary.performance/#{check_id}?from=#{from}&includeuptime=true&to=#{to}"
+  end
+
+  def outage_json from, to
+    outage_build_data(from,to).to_json
+  end
+
+  def outage_build_data from, to
+    unless outage_data(from,to)
+      status='up'
+      collection = []
+      while from<to do
+        timeto=from + (status=='up' ? rand(6*3600) : rand(1000))
+        collection << { status: status, timefrom: from, timeto: timeto }
+        from=timeto
+        status = (%w(up down) - [status]).first
+      end
+      @outage_data[to_key(from,to)]={ summary: { states: collection }}
+    end
+    outage_data(from,to)
+  end
+
+  def outage_data from, to
+    @outage_data[to_key(from,to)]
+  end
+
+  def performance_json from, to
+    performance_build_data(from,to).to_json
+  end
+
+  def performance_data from,to
+    @performance_data[to_key(from,to)]
+  end
+
+  def performance_build_data from, to
+
+    unless performance_data(from,to)
+      hours = {}
+      from.step(to,3600) { |x| hours[x]={ starttime: x, avgresponse: rand(1000), uptime: 0, downtime: 0, unmonitored: 0 }}
+      outage_build_data(from,to)[:summary][:states].each do |state|
+        interval = state[:timeto] - state[:timefrom]
+        hours.keys.each do |h|
+
+          if h.between?(state[:timefrom],state[:timeto])
+            add_time=3600
+            add_time=interval if interval<add_time
+            hours[h][(state[:status]+'time').to_sym]+=add_time
+            interval-=add_time
+          end
+
+        end
+
+        @performance_data[to_key(from,to)]= { summary: { hours: hours.values }}
+      end
+    end
+
+    performance_data(from,to)
+
+  end
+
+  def to_key(*args)
+    args.join(',')
   end
 
 end
