@@ -1,13 +1,28 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+<%
+start_date = Date.today.prev_month.at_beginning_of_month.to_time
+end_date = start_date.next_month - 1
+status = 'up'
+%>
+<% while start_date<end_date do %>
 
-one:
-  status: MyString
-  timefrom: 2017-09-15 10:30:09
-  timeto: 2017-09-15 10:30:09
-  report: one
+  <% timeto=start_date + (status == 'up' ? rand(24*3600) : rand(1000)) %>
+
+fix_<%= start_date.to_i %>:
+  status: <%= status %>
+  timefrom: <%= start_date %>
+  timeto: <%= timeto %>
+  vpc: one
+
+    <%
+    status =( %w(up down) - [status]).first
+    start_date = timeto
+    %>
+
+<% end %>
 
 two:
   status: MyString
-  timefrom: 2017-09-15 10:30:09
-  timeto: 2017-09-15 10:30:09
-  report: two
+  timefrom: 2017-09-18 16:36:37
+  timeto: 2017-09-18 16:36:37
+  vpc: two

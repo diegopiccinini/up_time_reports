@@ -9,7 +9,6 @@ class Report < ApplicationRecord
   validate :validate_period
   validate :validate_resolution
   has_many :performances
-  has_many :outages
 
   PERIODS = %w(day week month year)
   RESOLUTIONS =  %w(hour day week month)
@@ -67,10 +66,10 @@ class Report < ApplicationRecord
   end
 
   def update_outage
-    outages.delete_all
+    vpc.outages.where("timefrom >= ? and timefrom<= ?",from,to).delete_all
     outage=Pingdom::SummaryOutage.find vpc.id, from: from, to: to
     outage.states.each do |s|
-      outages.create status: s.status, timefrom: s.timefrom, timeto: s.timeto
+      vpc.outages.create status: s.status, timefrom: s.timefrom, timeto: s.timeto
     end
   end
 

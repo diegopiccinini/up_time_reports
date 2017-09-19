@@ -15,9 +15,9 @@ class ReportTest < ActiveSupport::TestCase
     end
 
     # the fixture vpcs cannot get a performance
-    @fixture_vpcs=Vpc.where("name like ?",'%Fixture%').all
-    @fixture_vpcs.each do |vpc|
-      stub_performance_error check_id: vpc.id, from: @date.to_time.to_i, to: to.to_i
+    @fixture_vpcs=Vpc.where("name like ?",'%Fixture%').all.map { |vpc| vpc.id }
+    @fixture_vpcs.each do |vpc_id|
+      stub_performance_error check_id: vpc_id, from: @date.to_time.to_i, to: to.to_i
     end
   end
 
@@ -50,7 +50,7 @@ class ReportTest < ActiveSupport::TestCase
     # step 3 save_outage
     Report.save_outage @date
     assert_equal Report.outage_saved(@date).count, ok
-    assert ok < Outage.count
+    assert ok < Outage.where.not( vpc_id: @fixtures_vpcs).count
 
   end
 

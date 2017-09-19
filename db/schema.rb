@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170915093009) do
+ActiveRecord::Schema.define(version: 20170918153637) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -35,10 +35,11 @@ ActiveRecord::Schema.define(version: 20170915093009) do
     t.string "status"
     t.datetime "timefrom"
     t.datetime "timeto"
-    t.bigint "report_id"
+    t.bigint "vpc_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["report_id"], name: "index_outages_on_report_id"
+    t.index ["vpc_id", "timefrom"], name: "index_outages_on_vpc_id_and_timefrom", unique: true
+    t.index ["vpc_id"], name: "index_outages_on_vpc_id"
   end
 
   create_table "performances", force: :cascade do |t|
@@ -88,7 +89,7 @@ ActiveRecord::Schema.define(version: 20170915093009) do
     t.index ["deleted_at"], name: "index_vpcs_on_deleted_at"
   end
 
-  add_foreign_key "outages", "reports"
+  add_foreign_key "outages", "vpcs"
   add_foreign_key "performances", "reports"
   add_foreign_key "reports", "vpcs"
   add_foreign_key "vpcs", "customers"

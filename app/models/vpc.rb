@@ -1,6 +1,7 @@
 class Vpc < ApplicationRecord
   acts_as_paranoid
   belongs_to :customer
+  has_many :outages
 
   def self.checks
     Pingdom::Check.params={}
@@ -38,5 +39,17 @@ class Vpc < ApplicationRecord
 
     { total: updated + created, updated: updated, created: created }
 
+  end
+
+  def outages_by_dates from: , to:
+    outages.by_dates from, to
+  end
+
+  def up from:, to:
+    outages.up from, to
+  end
+
+  def down from:, to:
+    outages.down from, to
   end
 end

@@ -6,7 +6,7 @@ one:
   uptime: 1
   downtime: 1
   unmonitored: 1
-  report: one
+  report: two
 
 two:
   starttime: 2017-09-15 10:27:05
