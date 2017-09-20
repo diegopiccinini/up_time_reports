@@ -7,7 +7,7 @@ class ReportTest < ActiveSupport::TestCase
     stub_servertime
     @date = Date.yesterday
     @period = 'day'
-    to = Date.today.to_time - 1
+    to = Date.today.to_time
     Vpc.update_from_checks
     Vpc.checks.each do |check|
       stub_performance check_id: check.id, from: @date.to_time.to_i, to: to.to_i
@@ -32,25 +32,33 @@ class ReportTest < ActiveSupport::TestCase
 
   test "Report generators" do
 
-    # report start
+    # step 1 report start
     Report.start @date
     assert Report.started(@date).count > 0
     assert_equal Report.started(@date).count, Vpc.count
 
-    # step 2 save_performance
-    Report.save_performance @date
-    updated =  Report.performance_saved_total(@date).count
-    ok =  Report.performance_saved(@date).count
+    # step 2 save_performances
+    Report.save_performances @date
+    updated =  Report.performances_saved_total(@date).count
+    ok =  Report.performances_saved(@date).count
     with_error = updated - ok
-    assert updated > 0
+    assert ok > 0
     assert ok < Performance.count
     assert with_error, @fixture_vpcs.count
     assert_equal updated, Vpc.count
 
-    # step 3 save_outage
-    Report.save_outage @date
-    assert_equal Report.outage_saved(@date).count, ok
-    assert ok < Outage.where.not( vpc_id: @fixtures_vpcs).count
+    # step 3 save_outages
+    Report.save_outages @date
+    assert_equal Report.outages_saved(@date).count, ok
+
+    # step 4 check results
+    Report.outages_saved(@date).each do |r|
+      assert r.uptime>0
+      assert_equal r.uptime, r.performances_uptime
+      assert_equal r.downtime, r.performances_downtime
+      assert_equal r.unmonitored, r.performances_unmonitored
+    end
+
 
   end
 

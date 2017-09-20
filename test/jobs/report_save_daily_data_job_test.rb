@@ -7,7 +7,7 @@ class ReportSaveDailyDataJobTest < ActiveJob::TestCase
     Report.where(start_date: @date).delete_all
 
     stub_checks
-    to = (@date + 1).to_time - 1
+    to = (@date + 1).to_time
     Vpc.update_from_checks
     Vpc.checks.each do |check|
       stub_performance check_id: check.id, from: @date.to_time.to_i, to: to.to_i
@@ -33,9 +33,9 @@ class ReportSaveDailyDataJobTest < ActiveJob::TestCase
     assert_equal Report.where(start_date: @date).count,5
 
     # fixture errors saved
-    assert_equal Report.performance_saved_total(@date).count,2
+    assert_equal Report.performances_saved_total(@date).count,2
     # outage saved
-    assert_equal Report.outage_saved(@date).count,3
+    assert_equal Report.outages_saved(@date).count,3
 
   end
 

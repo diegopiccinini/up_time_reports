@@ -9,16 +9,17 @@ class Report < ApplicationRecord
   validate :validate_period
   validate :validate_resolution
   has_many :performances
+  has_many :outages
 
   PERIODS = %w(day week month year)
   RESOLUTIONS =  %w(hour day week month)
 
   scope :daily, -> (date) { where( period: 'day', start_date: date ) }
   scope :started, -> (date) { daily(date).where( status: 'start' ) }
-  scope :performance_saved, -> (date) { daily(date).where( status: 'performance saved' ) }
-  scope :performance_saved_total, -> (date) { daily(date).where( "status LIKE ?", 'performance saved%' ) }
-  scope :outage_saved, -> (date) { daily(date).where( status: 'outage saved' ) }
-  scope :outage_saved_total, -> (date) { daily(date).where( "status LIKE ?", 'outage saved%' ) }
+  scope :performances_saved, -> (date) { daily(date).where( status: 'performances saved' ) }
+  scope :performances_saved_total, -> (date) { daily(date).where( "status LIKE ?", 'performances saved%' ) }
+  scope :outages_saved, -> (date) { daily(date).where( status: 'outages saved' ) }
+  scope :outages_saved_total, -> (date) { daily(date).where( "status LIKE ?", 'outages saved%' ) }
 
 
   def self.server_time
@@ -32,17 +33,17 @@ class Report < ApplicationRecord
     Vpc.update_from_checks
 
     Vpc.all.each do |vpc|
-      self.create  vpc: vpc, period: 'day', start_date: date, resolution: 'hour', status: 'start' , from: date.to_time, to: ((date + 1).to_time - 1)
+      self.create  vpc: vpc, period: 'day', start_date: date, resolution: 'hour', status: 'start' , from: date.to_time, to: ((date + 1).to_time)
     end
 
   end
 
-  def self.save_performance date
-    step filter_scope: :started, update_method: :update_performance, status: 'performance saved', date: date
+  def self.save_performances date
+    step filter_scope: :started, update_method: :update_performances, status: 'performances saved', date: date
   end
 
-  def self.save_outage date
-    step filter_scope: :performance_saved, update_method: :update_outage, status: 'outage saved', date: date
+  def self.save_outages date
+    step filter_scope: :performances_saved, update_method: :update_outages, status: 'outages saved', date: date
   end
 
   def self.step filter_scope:, update_method: , status: , date:
@@ -57,7 +58,7 @@ class Report < ApplicationRecord
     end
   end
 
-  def update_performance
+  def update_performances
     performances.delete_all
     performance=Pingdom::SummaryPerformance.find vpc.id, from: from, to: to, includeuptime: true
     performance.hours.each do |h|
@@ -65,12 +66,40 @@ class Report < ApplicationRecord
     end
   end
 
-  def update_outage
-    vpc.outages.where("timefrom >= ? and timefrom<= ?",from,to).delete_all
+  def update_outages
+    outages.delete_all
     outage=Pingdom::SummaryOutage.find vpc.id, from: from, to: to
     outage.states.each do |s|
-      vpc.outages.create status: s.status, timefrom: s.timefrom, timeto: s.timeto
+      outages.create status: s.status, timefrom: s.timefrom, timeto: s.timeto
     end
+  end
+
+  def uptime
+    outages.up(from,to).all.sum { |x| x.interval }
+  end
+
+  def downtime
+    outages.down(from,to).all.sum { |x| x.interval }
+  end
+
+  def unmonitored
+    outages.unknown(from,to).all.sum { |x| x.interval }
+  end
+
+  def performances_uptime
+    performances.sum(:uptime)
+  end
+
+  def performances_downtime
+    performances.sum(:downtime)
+  end
+
+  def performances_unmonitored
+    performances.sum(:unmonitored)
+  end
+
+  def avgresponse
+    performances.count>0 ? performances.total_avg/performances.count : 0
   end
 
   private

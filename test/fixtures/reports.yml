@@ -1,12 +1,22 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  resolution: MyString
-  period: MyString
-  start_date: 2017-09-15
-  status: MyString
-  from: 2017-09-15 10:21:35
-  to: 2017-09-15 10:21:35
+  resolution: hour
+  period: day
+  start_date: <%= Date.yesterday %>
+  status: outages saved
+  from: <%= Date.yesterday.to_time %>
+  to: <%= Date.today.to_time %>
+  data:
+  vpc: one
+
+two:
+  resolution: day
+  period: week
+  start_date: <%= Date.yesterday %>
+  status: outages saved
+  from: <%= Date.yesterday.to_time %>
+  to: <%= Date.today.to_time %>
   data:
   vpc: two
 

@@ -4,12 +4,7 @@ require 'webmock/minitest'
 
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
-  fixtures :all
-
-  setup do
-    @outage_data = {}
-    @performance_data = {}
-  end
+  fixtures [:reports, :vpcs]
 
   def fixtures_json name
     file =File.join('test','fixtures','files',name)
@@ -32,7 +27,8 @@ class ActiveSupport::TestCase
   end
 
   def stub_performance(check_id:,from:,to:)
-    body= performance_json(from,to)
+    stub_outage(check_id: check_id, from: from, to: to)
+    body= performance_json(check_id,from,to)
     stub_pingdom path: performance_path(check_id,from,to), body: body
   end
 
@@ -41,7 +37,7 @@ class ActiveSupport::TestCase
   end
 
   def stub_outage(check_id:, from:, to:)
-    body=outage_json(from, to)
+    body=outage_json(check_id,from, to)
     stub_pingdom path: "/summary.outage/#{check_id}?from=#{from}&to=#{to}", body: body
   end
 
@@ -57,71 +53,98 @@ class ActiveSupport::TestCase
     to_return(status: status, body: body, headers: {})
   end
 
-  private
-
   def performance_path check_id, from, to
     "/summary.performance/#{check_id}?from=#{from}&includeuptime=true&to=#{to}"
   end
 
-  def outage_json from, to
-    outage_build_data(from,to).to_json
+  def outage_json check_id,from, to
+    outage_build_data(check_id,from,to).to_json
   end
 
-  def outage_build_data from, to
-    unless outage_data(from,to)
+  def outage_build_data check_id,from, to
+
+    unless outage_data(check_id,from,to)
       status='up'
       collection = []
-      while from<to do
-        timeto=from + (status=='up' ? rand(6*3600) : rand(1000))
-        collection << { status: status, timefrom: from, timeto: timeto }
-        from=timeto
-        status = (%w(up down) - [status]).first
+      timefrom=from
+      loop do
+        timeto=timefrom + (status=='up' ? rand(6 * 3600) : rand(1000))
+        timeto=to if timeto>=to
+        collection << { status: status, timefrom: timefrom, timeto: timeto }
+        break if timeto==to
+        timefrom=timeto
+        status = (%w(up down unknown) - [status]).shuffle.first
       end
-      @outage_data[to_key(from,to)]={ summary: { states: collection }}
+      GlobalSetting.create name: to_key('outage_data',check_id,from,to), data: { summary: { states: collection }}.to_json
     end
-    outage_data(from,to)
+    outage_data(check_id,from,to)
   end
 
-  def outage_data from, to
-    @outage_data[to_key(from,to)]
+  def outage_data check_id,from, to
+    GlobalSetting.get to_key('outage_data',check_id,from,to)
   end
 
-  def performance_json from, to
-    performance_build_data(from,to).to_json
+  def performance_json check_id,from, to
+    performance_build_data(check_id,from,to).to_json
   end
 
-  def performance_data from,to
-    @performance_data[to_key(from,to)]
+  def performance_data check_id,from,to
+    GlobalSetting.get to_key('performance_data',check_id,from,to)
   end
 
-  def performance_build_data from, to
+  def performance_build_data check_id,from, to
 
-    unless performance_data(from,to)
+    unless performance_data(check_id,from,to)
       hours = {}
-      from.step(to,3600) { |x| hours[x]={ starttime: x, avgresponse: rand(1000), uptime: 0, downtime: 0, unmonitored: 0 }}
-      outage_build_data(from,to)[:summary][:states].each do |state|
-        interval = state[:timeto] - state[:timefrom]
-        hours.keys.each do |h|
+      from.step(to - 3600,3600) { |x| hours[x]={ starttime: x, avgresponse: rand(1000), uptime: 0, downtime: 0, unmonitored: 0 }}
 
-          if h.between?(state[:timefrom],state[:timeto])
-            add_time=3600
-            add_time=interval if interval<add_time
-            hours[h][(state[:status]+'time').to_sym]+=add_time
-            interval-=add_time
-          end
+      data=outage_data(check_id,from,to)[:summary][:states]
 
+      hours.keys.each do |h|
+        next_h = h + 3600
+
+        # outages inside peridod
+        inside_filter = data.select { |x| x[:timefrom]<next_h and x[:timeto]>h }
+        inside_filter.each do |state|
+          interval = [state[:timeto],next_h].min - [state[:timefrom],h].max
+          hours[h][status_map[state[:status].to_sym]]+=interval
         end
 
-        @performance_data[to_key(from,to)]= { summary: { hours: hours.values }}
       end
+      hours.values.each do |h|
+        total_time =h[:uptime] + h[:downtime] + h[:unmonitored]
+        raise "total time #{total_time} is wrong in #{h[:strattime]}" unless total_time==3600
+      end
+      check_generated(data, hours)
+      GlobalSetting.create name: to_key('performance_data',check_id,from,to), data: { summary: { hours: hours.values }}.to_json
     end
 
-    performance_data(from,to)
+    performance_data(check_id,from,to)
 
   end
+
+  private
 
   def to_key(*args)
     args.join(',')
   end
 
+  def check_generated(data,hours)
+    check(data,hours,:up)
+    check(data,hours,:down)
+    check(data,hours,:unknown)
+  end
+
+  def check(data,hours,status)
+    key=status_map[status]
+    origin=data.select { |x| x[:status]==status.to_s }.sum { |x| x[:timeto] - x[:timefrom] }
+    generated=hours.values.sum { |x| x[key] }
+    raise "origin #{key.to_s} #{origin} no match with #{generated}" unless origin==generated
+  end
+
+  def status_map
+    { up: :uptime, down: :downtime, unknown: :unmonitored }
+  end
+
 end
+
