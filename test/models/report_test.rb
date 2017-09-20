@@ -59,7 +59,6 @@ class ReportTest < ActiveSupport::TestCase
       assert_equal r.unmonitored, r.performances_unmonitored
     end
 
-
   end
 
 end
