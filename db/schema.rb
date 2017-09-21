@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170920162028) do
+ActiveRecord::Schema.define(version: 20170921104020) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,16 @@ ActiveRecord::Schema.define(version: 20170920162028) do
     t.string "level", limit: 5, default: "info"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "job_id"
+    t.string "status", limit: 10, default: "message"
+    t.index ["job_id"], name: "index_histories_on_job_id"
+  end
+
+  create_table "jobs", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_jobs_on_name", unique: true
   end
 
   create_table "outages", force: :cascade do |t|
@@ -95,6 +105,7 @@ ActiveRecord::Schema.define(version: 20170920162028) do
     t.index ["deleted_at"], name: "index_vpcs_on_deleted_at"
   end
 
+  add_foreign_key "histories", "jobs"
   add_foreign_key "outages", "reports"
   add_foreign_key "performances", "reports"
   add_foreign_key "reports", "vpcs"
