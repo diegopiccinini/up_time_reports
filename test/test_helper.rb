@@ -95,28 +95,40 @@ class ActiveSupport::TestCase
   def performance_build_data check_id,from,to,resolution='hour'
 
     unless performance_data(check_id,from,to,resolution)
-      hours = {}
-      from.step(to - 3600,3600) { |x| hours[x]={ starttime: x, avgresponse: rand(1000), uptime: 0, downtime: 0, unmonitored: 0 }}
+      units = {}
+      time_period = case resolution
+                    when 'day'
+                      3600 * 24
+                    when 'week'
+                      3600 * 24 * 7
+                    else
+                      3600
+                    end
+
+      from.step(to - time_period,time_period) do |x|
+        units[x]={ starttime: x, avgresponse: rand(1000), uptime: 0, downtime: 0, unmonitored: 0 }
+      end
 
       data=outage_data(check_id,from,to)[:summary][:states]
 
-      hours.keys.each do |h|
-        next_h = h + 3600
+      units.keys.each do |h|
+        next_h = h + time_period
 
         # outages inside peridod
         inside_filter = data.select { |x| x[:timefrom]<next_h and x[:timeto]>h }
         inside_filter.each do |state|
           interval = [state[:timeto],next_h].min - [state[:timefrom],h].max
-          hours[h][status_map[state[:status].to_sym]]+=interval
+          units[h][status_map[state[:status].to_sym]]+=interval
         end
 
       end
-      hours.values.each do |h|
+      units.values.each do |h|
         total_time =h[:uptime] + h[:downtime] + h[:unmonitored]
-        raise "total time #{total_time} is wrong in #{h[:strattime]}" unless total_time==3600
+        raise "total time #{total_time} is wrong in #{h[:strattime]}" unless total_time==time_period
       end
-      check_generated(data, hours)
-      GlobalSetting.create name: to_key('performance_data',check_id,from,to,resolution), data: { summary: { hours: hours.values }}.to_json
+      check_generated(data, units)
+      json_data = { summary: { resolution.pluralize.to_sym => units.values }}.to_json
+      GlobalSetting.create name: to_key('performance_data',check_id,from,to,resolution), data: json_data
     end
 
     performance_data(check_id,from,to,resolution)
@@ -140,16 +152,16 @@ class ActiveSupport::TestCase
     args.join(',')
   end
 
-  def check_generated(data,hours)
-    check(data,hours,:up)
-    check(data,hours,:down)
-    check(data,hours,:unknown)
+  def check_generated(data,units)
+    check(data,units,:up)
+    check(data,units,:down)
+    check(data,units,:unknown)
   end
 
-  def check(data,hours,status)
+  def check(data,units,status)
     key=status_map[status]
     origin=data.select { |x| x[:status]==status.to_s }.sum { |x| x[:timeto] - x[:timefrom] }
-    generated=hours.values.sum { |x| x[key] }
+    generated=units.values.sum { |x| x[key] }
     raise "origin #{key.to_s} #{origin} no match with #{generated}" unless origin==generated
   end
 
