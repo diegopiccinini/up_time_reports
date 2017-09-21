@@ -8,8 +8,8 @@ class Report < ApplicationRecord
   validates :start_date, presence: true
   validate :validate_period
   validate :validate_resolution
-  has_many :performances
-  has_many :outages
+  has_many :performances, :dependent => :delete_all
+  has_many :outages, :dependent => :delete_all
 
   PERIODS = %w(day week month year)
   RESOLUTIONS =  %w(hour day week month)
@@ -28,7 +28,7 @@ class Report < ApplicationRecord
 
   def self.start date
 
-    self.daily( date ).delete_all
+    self.daily( date ).destroy_all
 
     Vpc.update_from_checks
 

@@ -22,10 +22,7 @@ class ReportSaveDailyDataJobTest < ActiveJob::TestCase
   end
 
   teardown do
-    Report.where(start_date: @date).each do |r|
-      r.performances.delete_all
-      r.delete
-    end
+    Report.daily( @date).destroy_all
   end
 
   test "reports outage was saved" do
