@@ -19,6 +19,7 @@ class ReportSaveDailyDataJobTest < ActiveJob::TestCase
     @fixture_vpcs.each do |vpc_id|
       stub_performance_error check_id: vpc_id, from: @date.to_time.to_i, to: to.to_i
     end
+    ReportSaveDailyDataJob.perform_now(@date)
   end
 
   teardown do
@@ -26,14 +27,18 @@ class ReportSaveDailyDataJobTest < ActiveJob::TestCase
   end
 
   test "reports outage was saved" do
-    ReportSaveDailyDataJob.perform_now(@date)
     assert_equal Report.where(start_date: @date).count,5
 
     # fixture errors saved
     assert_equal Report.performances_saved_total(@date).count,2
     # outage saved
     assert_equal Report.outages_saved(@date).count,3
+  end
 
+  test "history tracker" do
+    job=Job.find_by name: 'ReportSaveDailyDataJob'
+    assert_equal History.where( job: job, status: 'started').count, 1
+    assert_equal History.where( job: job, status: 'finished').count, 1
   end
 
 end

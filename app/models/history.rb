@@ -1,5 +1,6 @@
 class History < ApplicationRecord
   belongs_to :job
+  @@verbose = false
 
   def self.write text, lines_before=0, lines_after=0, level: 'info'
     job=self.last.job
@@ -8,7 +9,7 @@ class History < ApplicationRecord
   end
 
   def self.verbose
-    @@verbose || false
+    @@verbose
   end
 
   def self.verbose= value
