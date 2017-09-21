@@ -3,7 +3,7 @@ namespace :report do
   desc "To creates yesterday reports"
   task yesterday: :environment do
     History.verbose= true
-    ReportSaveDailyDataJob.perform_now(Date.yesterday)
+    ReportGeneratorJob.perform_now(Date.yesterday)
     History.verbose= false
   end
 
@@ -12,7 +12,7 @@ namespace :report do
 
     date=Date.parse args.day
     raise "I haven't the time machine to get a report for #{date}" if date>Date.today
-    ReportSaveDailyDataJob.perform_now(date)
+    ReportGeneratorJob.perform_now(date)
 
   end
 
@@ -26,7 +26,7 @@ namespace :report do
     raise "#{from} date must be before #{to} date" if from>to
 
     while from<to do
-      ReportSaveDailyDataJob.perform_async(from)
+      ReportGeneratorJob.perform_async(from)
       from+=1
     end
 

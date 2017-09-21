@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ReportSaveDailyDataJobTest < ActiveJob::TestCase
+class ReportGeneratorJobTest < ActiveJob::TestCase
 
   setup do
     @date = Date.yesterday.at_beginning_of_month
@@ -19,7 +19,7 @@ class ReportSaveDailyDataJobTest < ActiveJob::TestCase
     @fixture_vpcs.each do |vpc_id|
       stub_performance_error check_id: vpc_id, from: @date.to_time.to_i, to: to.to_i, resolution: 'hour'
     end
-    ReportSaveDailyDataJob.perform_now(@date)
+    ReportGeneratorJob.perform_now(@date)
   end
 
   teardown do
@@ -36,7 +36,7 @@ class ReportSaveDailyDataJobTest < ActiveJob::TestCase
   end
 
   test "history tracker" do
-    name= 'ReportSaveDailyDataJob'
+    name= 'ReportGeneratorJob'
     assert_equal History.by_job_name(name).where(status: 'started').count, 1
     assert_equal History.by_job_name(name).where(status: 'finished').count, 1
   end
