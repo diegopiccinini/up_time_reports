@@ -2,7 +2,9 @@ namespace :report do
 
   desc "To creates yesterday reports"
   task yesterday: :environment do
+    History.verbose= true
     ReportSaveDailyDataJob.perform_now(Date.yesterday)
+    History.verbose= false
   end
 
   desc "To create a report by day"

@@ -3,6 +3,7 @@ require 'test_helper'
 class ReportTest < ActiveSupport::TestCase
 
   setup do
+    History.start 'ReportJob'
     stub_checks
     stub_servertime
     @date = Date.yesterday
@@ -19,6 +20,10 @@ class ReportTest < ActiveSupport::TestCase
     @fixture_vpcs.each do |vpc_id|
       stub_performance_error check_id: vpc_id, from: @date.to_time.to_i, to: to.to_i
     end
+  end
+
+  teardown do
+    History.finish 'ReportJob'
   end
 
   test "#server_time" do

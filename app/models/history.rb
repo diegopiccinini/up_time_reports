@@ -21,14 +21,14 @@ class History < ApplicationRecord
 
   def self.start jobname, text=nil
     job = Job.find_or_create_by name: jobname
-    text = "Starting the #{jobname} job" unless text
+    text = "*** Starting #{jobname} ***" unless text
     self.create text: text, status: 'started', job: job
     output text, 2, 2
   end
 
   def self.finish text=nil
     job = self.last.job
-    text = "Finish the #{job.name} job" unless text
+    text = "*** Finish the #{job.name} ***" unless text
     self.create text: text, status: 'finished', job: job
     output text, 2, 2
   end

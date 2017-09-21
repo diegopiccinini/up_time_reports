@@ -26,29 +26,34 @@ class Report < ApplicationRecord
     Pingdom::ServerTime.time
   end
 
-  def self.start date
+  def self.start date, period='day'
+
+    History.write "** Starting #{period} reports on #{date}",2,2
 
     self.daily( date ).destroy_all
 
     Vpc.update_from_checks
 
     Vpc.all.each do |vpc|
-      self.create  vpc: vpc, period: 'day', start_date: date, resolution: 'hour', status: 'start' , from: date.to_time, to: ((date + 1).to_time)
+      self.create  vpc: vpc, period: period, start_date: date, resolution: 'hour', status: 'start' , from: date.to_time, to: ((date + 1).to_time)
     end
 
   end
 
   def self.save_performances date
+    History.write "** Saving performances",2,2
     step filter_scope: :started, update_method: :update_performances, status: 'performances saved', date: date
   end
 
   def self.save_outages date
+    History.write "** Saving outages",2,2
     step filter_scope: :performances_saved, update_method: :update_outages, status: 'outages saved', date: date
   end
 
   def self.step filter_scope:, update_method: , status: , date:
     self.send(filter_scope,date).each do |report|
       begin
+        History.write "\t#{update_method} on #{report.vpc.name}"
         report.send(update_method)
         report.status = status
       rescue
