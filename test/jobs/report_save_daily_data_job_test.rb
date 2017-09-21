@@ -36,9 +36,9 @@ class ReportSaveDailyDataJobTest < ActiveJob::TestCase
   end
 
   test "history tracker" do
-    job=Job.find_by name: 'ReportSaveDailyDataJob'
-    assert_equal History.where( job: job, status: 'started').count, 1
-    assert_equal History.where( job: job, status: 'finished').count, 1
+    name= 'ReportSaveDailyDataJob'
+    assert_equal History.by_job_name(name).where(status: 'started').count, 1
+    assert_equal History.by_job_name(name).where(status: 'finished').count, 1
   end
 
 end

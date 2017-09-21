@@ -11,6 +11,8 @@ class Vpc < ApplicationRecord
     updated = 0
     created = 0
 
+    History.write "Updating vpc from checks"
+
     self.checks.each do |check|
 
       vpc=self.find_or_create_by id: check.id
@@ -35,6 +37,8 @@ class Vpc < ApplicationRecord
       vpc.save
 
     end
+
+    History.write "updated created: #{created}, updated vpcs: #{updated}"
 
     { total: updated + created, updated: updated, created: created }
 

@@ -25,11 +25,17 @@ class VpcTest < ActiveSupport::TestCase
 
   test "#update_from_checks" do
 
+    History.start 'VpcJob'
+
     ufc = Vpc.update_from_checks
+
+    History.finish
+
     assert ufc[:total]>0
     assert_equal ( ufc[:created] + ufc[:updated] ), ufc[:total]
     assert_equal Vpc.checks.count, ufc[:total]
 
+    assert History.by_job_name('VpcJob').count>0
   end
 
 

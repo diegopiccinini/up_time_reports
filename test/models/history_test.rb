@@ -2,6 +2,10 @@ require 'test_helper'
 
 class HistoryTest < ActiveSupport::TestCase
 
+  teardown do
+    History.verbose=false
+  end
+
   test "verbose" do
     History.verbose = true
 

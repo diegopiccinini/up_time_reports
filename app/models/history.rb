@@ -1,10 +1,13 @@
 class History < ApplicationRecord
   belongs_to :job
   @@verbose = false
+  scope :by_job_name, -> (jobname) { includes(:job).where('jobs.name': jobname) }
 
   def self.write text, lines_before=0, lines_after=0, level: 'info'
-    job=self.last.job
-    self.create text: text, level: level, job: job
+    if self.last and self.last.status!='finished'
+      job=self.last.job
+      self.create text: text, level: level, job: job
+    end
     output text, lines_before, lines_after
   end
 
