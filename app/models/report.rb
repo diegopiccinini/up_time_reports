@@ -12,7 +12,7 @@ class Report < ApplicationRecord
   has_many :outages, :dependent => :delete_all
 
   PERIODS = %w(day week month year)
-  RESOLUTIONS =  %w(hour day week month)
+  RESOLUTIONS =  %w(hour day week)
 
   scope :daily, -> (date) { where( period: 'day', start_date: date ) }
   scope :started, -> (date) { daily(date).where( status: 'start' ) }
@@ -26,7 +26,7 @@ class Report < ApplicationRecord
     Pingdom::ServerTime.time
   end
 
-  def self.start date, period='day'
+  def self.start date, period: 'day', resolution: 'hour'
 
     History.write "** Starting #{period} reports on #{date}",2,2
 
@@ -35,7 +35,7 @@ class Report < ApplicationRecord
     Vpc.update_from_checks
 
     Vpc.all.each do |vpc|
-      self.create  vpc: vpc, period: period, start_date: date, resolution: 'hour', status: 'start' , from: date.to_time, to: ((date + 1).to_time)
+      self.create  vpc: vpc, period: period, start_date: date, resolution: resolution, status: 'start' , from: date.to_time, to: ((date + 1).to_time)
     end
 
   end
@@ -65,7 +65,7 @@ class Report < ApplicationRecord
 
   def update_performances
     performances.delete_all
-    performance=Pingdom::SummaryPerformance.find vpc.id, from: from, to: to, includeuptime: true
+    performance=Pingdom::SummaryPerformance.find vpc.id, from: from, to: to, includeuptime: true, resolution: resolution
     performance.hours.each do |h|
       performances.create starttime: h.starttime, avgresponse: h.avgresponse, uptime: h.uptime, downtime: h.downtime, unmonitored: h.unmonitored
     end

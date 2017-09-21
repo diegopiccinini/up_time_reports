@@ -10,14 +10,14 @@ class ReportSaveDailyDataJobTest < ActiveJob::TestCase
     to = (@date + 1).to_time
     Vpc.update_from_checks
     Vpc.checks.each do |check|
-      stub_performance check_id: check.id, from: @date.to_time.to_i, to: to.to_i
+      stub_performance check_id: check.id, from: @date.to_time.to_i, to: to.to_i, resolution: 'hour'
       stub_outage check_id: check.id, from: @date.to_time.to_i, to: to.to_i
     end
 
     # the fixture vpcs cannot get a performance
     @fixture_vpcs=Vpc.where("name like ?",'%Fixture%').all.map { |vpc| vpc.id }
     @fixture_vpcs.each do |vpc_id|
-      stub_performance_error check_id: vpc_id, from: @date.to_time.to_i, to: to.to_i
+      stub_performance_error check_id: vpc_id, from: @date.to_time.to_i, to: to.to_i, resolution: 'hour'
     end
     ReportSaveDailyDataJob.perform_now(@date)
   end

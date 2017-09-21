@@ -26,14 +26,14 @@ class ActiveSupport::TestCase
     stub_pingdom path: '/servertime', body: body
   end
 
-  def stub_performance(check_id:,from:,to:)
+  def stub_performance(check_id:,from:,to:, resolution: 'hour')
     stub_outage(check_id: check_id, from: from, to: to)
-    body= performance_json(check_id,from,to)
-    stub_pingdom path: performance_path(check_id,from,to), body: body
+    body= performance_json(check_id,from,to,resolution)
+    stub_pingdom path: performance_path(check_id,from,to,resolution), body: body
   end
 
-  def stub_performance_error(check_id:, from:, to:)
-    stub_pingdom path: performance_path(check_id,from,to), body: '', status: 401
+  def stub_performance_error(check_id:, from:, to:, resolution: 'hour')
+    stub_pingdom path: performance_path(check_id,from,to,resolution), body: '', status: 401
   end
 
   def stub_outage(check_id:, from:, to:)
@@ -53,8 +53,8 @@ class ActiveSupport::TestCase
     to_return(status: status, body: body, headers: {})
   end
 
-  def performance_path check_id, from, to
-    "/summary.performance/#{check_id}?from=#{from}&includeuptime=true&to=#{to}"
+  def performance_path check_id, from, to, resolution='hour'
+    "/summary.performance/#{check_id}?from=#{from}&includeuptime=true&resolution=#{resolution}&to=#{to}"
   end
 
   def outage_json check_id,from, to
@@ -84,17 +84,17 @@ class ActiveSupport::TestCase
     GlobalSetting.get to_key('outage_data',check_id,from,to)
   end
 
-  def performance_json check_id,from, to
-    performance_build_data(check_id,from,to).to_json
+  def performance_json check_id,from,to,resolution='hour'
+    performance_build_data(check_id,from,to,resolution).to_json
   end
 
-  def performance_data check_id,from,to
-    GlobalSetting.get to_key('performance_data',check_id,from,to)
+  def performance_data check_id,from,to,resolution='hour'
+    GlobalSetting.get to_key('performance_data',check_id,from,to,resolution)
   end
 
-  def performance_build_data check_id,from, to
+  def performance_build_data check_id,from,to,resolution='hour'
 
-    unless performance_data(check_id,from,to)
+    unless performance_data(check_id,from,to,resolution)
       hours = {}
       from.step(to - 3600,3600) { |x| hours[x]={ starttime: x, avgresponse: rand(1000), uptime: 0, downtime: 0, unmonitored: 0 }}
 
@@ -116,10 +116,10 @@ class ActiveSupport::TestCase
         raise "total time #{total_time} is wrong in #{h[:strattime]}" unless total_time==3600
       end
       check_generated(data, hours)
-      GlobalSetting.create name: to_key('performance_data',check_id,from,to), data: { summary: { hours: hours.values }}.to_json
+      GlobalSetting.create name: to_key('performance_data',check_id,from,to,resolution), data: { summary: { hours: hours.values }}.to_json
     end
 
-    performance_data(check_id,from,to)
+    performance_data(check_id,from,to,resolution)
 
   end
 
