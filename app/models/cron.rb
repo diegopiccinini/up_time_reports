@@ -12,11 +12,21 @@ class Cron < ApplicationRecord
   def in_range? start_time, end_time
     in_range= (start_time..end_time).include? (start_time.change(hour: 0) + hour.hours)
     in_range&= in_day_of_week?(start_time) if day_of_week
+    in_range&= in_day_of_month?(start_time) if day_of_month
+    in_range&= in_month?(start_time) if month
     in_range
   end
 
   def in_day_of_week? time
     day_of_week == time.wday
+  end
+
+  def in_day_of_month? time
+    day_of_month == time.day
+  end
+
+  def in_month? time
+    month == time.month
   end
 
   def month_validation

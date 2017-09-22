@@ -13,6 +13,20 @@ at_8_on_monday:
   day_of_week: 1
   status: ok
 
+at_8_on_1st_of_month:
+  name: Run at 8 on 1st of month
+  job: one
+  hour: 8
+  day_of_month: 1
+  status: ok
+
+at_8_on_february:
+  name: Run at 8 on february
+  job: one
+  hour: 8
+  month: 2
+  status: ok
+
 two:
   name: MyString
   job: two
