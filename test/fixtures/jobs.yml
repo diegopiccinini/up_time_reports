@@ -1,13 +1,16 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 daily_vpc_reports:
-  name: Daily Vpc Reports
+  name: Initialize Daily Vpc Reports
 
 weekly_vpc_reports:
-  name: Weekly Vpc Reports
+  name: Initialize Weekly Vpc Reports
 
-monthly_vpc_reports:
-  name: Monthy Vpc Reports
+monthly_vpc_reports_with_day_resolution:
+  name: Initialize Monthly Vpc Reports with day Resolution
+
+monthly_vpc_reports_with_week_resolution:
+  name: Initialize Monthly Vpc Reports with week Resolution
 
 one:
-  name: Fist Job
+  name: Fixture Job

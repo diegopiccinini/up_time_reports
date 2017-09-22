@@ -3,7 +3,7 @@ class Cron < ApplicationRecord
   has_many :histories
 
   validates :name, :hour, presence: true
-  validates :status, inclusion: { in: %w(ok running error) }
+  validates :status, inclusion: { in: %w(ok enqueue running error) }
   validates :hour, numericality: { only_integer: true, greater_than_or_equal: 0, less_than_or_equal: 23 }
   validate :month_validation
   validate :day_of_week_validation
@@ -59,4 +59,14 @@ class Cron < ApplicationRecord
       validate_inclusion :day_of_month, (1..last_day).to_a
     end
   end
+
+  def run
+    history=job.execution(self)
+    if history.is_a?(History)
+      update status: 'running'
+    else
+      update status: 'enqueue'
+    end
+  end
+
 end

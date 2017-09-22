@@ -36,7 +36,7 @@ class CronValidationsTest < ActiveSupport::TestCase
     @cron.valid?
     assert @cron.errors.keys.include?(:status)
 
-    %w(ok running error).each do |status|
+    %w(ok enqueue running error).each do |status|
       @cron.status = status
       @cron.valid?
       assert_not @cron.errors.keys.include?(:status)

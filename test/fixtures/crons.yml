@@ -2,7 +2,7 @@
 
 one:
   name: Run at 8
-  job: one
+  job: daily_vpc_reports
   hour: 8
   status: ok
 
