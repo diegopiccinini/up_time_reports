@@ -1,7 +1,13 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: First Job
+daily_vpc_reports:
+  name: Daily Vpc Reports
 
-two:
-  name: Second Job
+weekly_vpc_reports:
+  name: Weekly Vpc Reports
+
+monthly_vpc_reports:
+  name: Monthy Vpc Reports
+
+one:
+  name: Fist Job

@@ -1,9 +1,9 @@
 class History < ApplicationRecord
-  belongs_to :job
   belongs_to :cron, optional: true
+  belongs_to :history, optional: true
 
   @@verbose = false
-  scope :by_job_name, -> (jobname) { includes(:job).where('jobs.name': jobname) }
+  @@free= true
 
   def self.write text, lines_before=0, lines_after=0, level: 'info'
     if self.last and self.last.status!='finished'
@@ -20,23 +20,33 @@ class History < ApplicationRecord
     @@verbose=value
   end
 
+  def self.free
+    @@free
+  end
+
+  def self.free= value
+    @@free=value
+  end
+
   def self.log text:, level: 'info', status: 'message'
-    self.create text: text, level: level, status: status, job: self.last.job, cron: self.last.cron
+    self.create text: text, level: level, status: status, cron: self.last.cron, history: self.last.history
   end
 
-  def self.start jobname, text=nil, cron: nil
-
-    job = Job.find_or_create_by name: jobname
-    text = "*** Starting #{jobname} ***" unless text
-    self.create text: text, status: 'started', job: job, cron: cron
-    output text, 2, 2
-
+  def self.start text, cron: nil
+    if @@free
+      h=self.create text: text, status: 'started', cron: cron
+      output text, 2, 2
+      h.update(history: h)
+      @@free=false
+    end
   end
-
   def self.finish text=nil
-    text = "*** Finish the #{self.last.job.name} ***" unless text
-    self.log text: text, status: 'finished'
-    output text, 2, 2
+    text = "*** Finish ***" unless text
+    if history=self.log( text: text, status: 'finished')
+      output text, 2, 2
+      @@free=true
+    end
+    history
   end
 
   def self.output text, lines_before=0, lines_after=0

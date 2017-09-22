@@ -1,5 +1,6 @@
 class Cron < ApplicationRecord
   belongs_to :job
+  has_many :histories
 
   validates :name, :hour, presence: true
   validates :status, inclusion: { in: %w(ok running error) }

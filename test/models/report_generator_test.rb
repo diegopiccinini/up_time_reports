@@ -33,8 +33,15 @@ class ReportGeneratorTest < ActiveSupport::TestCase
   def monthly_setup resolution: 'day'
     to = Date.today.at_beginning_of_month
     @date = to.prev_month
+
+    if resolution=='week'
+      @date-=1 until @date.wday==1
+      to-=1 until to.wday==1
+    end
+
     to=to.to_time.to_i
     from=@date.to_time.to_i
+
     stubs_setup from: from, to: to, resolution: resolution
   end
 
@@ -98,6 +105,13 @@ class ReportGeneratorTest < ActiveSupport::TestCase
 
     monthly_setup resolution: 'day'
     report_generator period: 'month', resolution: 'day'
+
+  end
+
+  test "Report month generator week resolution" do
+
+    monthly_setup resolution: 'week'
+    report_generator period: 'month', resolution: 'week'
 
   end
 

@@ -47,7 +47,13 @@ class Report < ApplicationRecord
          when 'week'
            date.next_week
          when 'month'
-           date.next_month
+           if resolution=='week'
+             to = date.next_month.at_end_of_month
+             to-=1 until to.wday==1
+             to
+           else
+             date.next_month
+           end
          end
 
     Vpc.all.each do |vpc|

@@ -19,7 +19,7 @@ class ReportGeneratorJobTest < ActiveJob::TestCase
     @fixture_vpcs.each do |vpc_id|
       stub_performance_error check_id: vpc_id, from: @date.to_time.to_i, to: to.to_i, resolution: 'hour'
     end
-    ReportGeneratorJob.perform_now(@date)
+    @history=ReportGeneratorJob.perform_now(@date)
   end
 
   teardown do
@@ -36,9 +36,8 @@ class ReportGeneratorJobTest < ActiveJob::TestCase
   end
 
   test "history tracker" do
-    name= 'ReportGeneratorJob'
-    assert_equal History.by_job_name(name).where(status: 'started').count, 1
-    assert_equal History.by_job_name(name).where(status: 'finished').count, 1
+    assert_equal @history.history.status, 'started'
+    assert_equal @history.status, 'finished'
   end
 
 end
