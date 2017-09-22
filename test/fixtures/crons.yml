@@ -1,25 +1,26 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
+  name: Run at 8
   job: one
-  hour: 1
+  hour: 8
+  status: ok
+
+at_8_on_monday:
+  name: Run at 8 on monday
+  job: one
+  hour: 8
   day_of_week: 1
-  day_of_month: 1
-  month: 1
-  status: MyString
-  last_execution: 2017-09-22 09:48:01
-  next_execution: 2017-09-22 09:48:01
-  message: MyString
+  status: ok
 
 two:
   name: MyString
   job: two
   hour: 1
-  day_of_week: 1
+  day_of_week: 0
   day_of_month: 1
   month: 1
-  status: MyString
+  status: error
   last_execution: 2017-09-22 09:48:01
   next_execution: 2017-09-22 09:48:01
   message: MyString

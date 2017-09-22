@@ -8,6 +8,17 @@ class Cron < ApplicationRecord
   validate :day_of_week_validation
   validate :day_of_month_validation
 
+
+  def in_range? start_time, end_time
+    in_range= (start_time..end_time).include? (start_time.change(hour: 0) + hour.hours)
+    in_range&= in_day_of_week?(start_time) if day_of_week
+    in_range
+  end
+
+  def in_day_of_week? time
+    day_of_week == time.wday
+  end
+
   def month_validation
     unless month.nil?
       validate_inclusion :month, (1..12).to_a
