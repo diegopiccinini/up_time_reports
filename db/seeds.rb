@@ -5,3 +5,8 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+Job.find_or_create_by name: 'Initialize Daily Vpc Reports'
+Job.find_or_create_by name: 'Initialize Weekly Vpc Reports'
+Job.find_or_create_by name: 'Initialize Monthly Vpc Reports with day Resolution'
+Job.find_or_create_by name: 'Initialize Monthly Vpc Reports with week Resolution'
