@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(version: 20170922085123) do
     t.integer "day_of_week", limit: 2
     t.integer "day_of_month", limit: 2
     t.integer "month", limit: 2
-    t.string "status", limit: 10
+    t.string "status", limit: 10, default: "ok"
     t.datetime "last_execution"
     t.datetime "next_execution"
     t.string "message"

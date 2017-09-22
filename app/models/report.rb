@@ -4,8 +4,7 @@ class Report < ApplicationRecord
 
   belongs_to :vpc
 
-  validates :status, presence: true
-  validates :start_date, presence: true
+  validates :status,:start_date, presence: true
   validate :validate_period
   validate :validate_resolution
   has_many :performances, :dependent => :delete_all
