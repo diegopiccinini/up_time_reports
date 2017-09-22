@@ -10,10 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170921104020) do
+ActiveRecord::Schema.define(version: 20170922085123) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "crons", force: :cascade do |t|
+    t.string "name"
+    t.bigint "job_id"
+    t.integer "hour", limit: 2
+    t.integer "day_of_week", limit: 2
+    t.integer "day_of_month", limit: 2
+    t.integer "month", limit: 2
+    t.string "status", limit: 10
+    t.datetime "last_execution"
+    t.datetime "next_execution"
+    t.string "message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_crons_on_job_id"
+  end
 
   create_table "customers", force: :cascade do |t|
     t.string "name"
@@ -38,6 +54,8 @@ ActiveRecord::Schema.define(version: 20170921104020) do
     t.datetime "updated_at", null: false
     t.bigint "job_id"
     t.string "status", limit: 10, default: "message"
+    t.bigint "cron_id"
+    t.index ["cron_id"], name: "index_histories_on_cron_id"
     t.index ["job_id"], name: "index_histories_on_job_id"
   end
 
@@ -105,6 +123,7 @@ ActiveRecord::Schema.define(version: 20170921104020) do
     t.index ["deleted_at"], name: "index_vpcs_on_deleted_at"
   end
 
+  add_foreign_key "crons", "jobs"
   add_foreign_key "histories", "jobs"
   add_foreign_key "outages", "reports"
   add_foreign_key "performances", "reports"
