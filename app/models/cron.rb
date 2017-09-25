@@ -60,8 +60,8 @@ class Cron < ApplicationRecord
     end
   end
 
-  def run
-    history=job.execution(self)
+  def run!
+    history=job.run!(self)
     if history.is_a?(History)
       update status: 'running'
     else
