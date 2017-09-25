@@ -10,7 +10,10 @@ class Cron < ApplicationRecord
   validate :day_of_month_validation
 
   before_save do |cron|
-    cron.next_execution=cron.check_next_execution!
+    fields_to_check = %w(last_execution hour month day_of_week day_of_month)
+    if next_execution.nil? or ( fields_to_check - changed ).count < fields_to_check.count
+      cron.next_execution=cron.check_next_execution!
+    end
   end
 
   def in_range? start_time, end_time
