@@ -9,6 +9,9 @@ class Cron < ApplicationRecord
   validate :day_of_week_validation
   validate :day_of_month_validation
 
+  before_save do |cron|
+    cron.next_execution=cron.check_next_execution!
+  end
 
   def in_range? start_time, end_time
     in_range= (start_time..end_time).include? (start_time.change(hour: 0) + hour.hours)
@@ -70,7 +73,7 @@ class Cron < ApplicationRecord
   end
 
   def finish!
-    update(status: 'ok', last_execution: Time.now, next_execution: check_next_execution!)
+    update(status: 'ok', last_execution: Time.now)
   end
 
   def check_next_execution!

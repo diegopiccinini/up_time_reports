@@ -105,4 +105,22 @@ class CronTest < ActiveSupport::TestCase
     assert_equal cron.check_next_execution!.hour, 8
 
   end
+
+  test "next_execution" do
+    cron = crons(:at_8_on_monday)
+    cron.save
+    next_execution= cron.next_execution
+    assert_not_nil next_execution
+    cron.day_of_week=2
+    cron.save
+    cron.reload
+    second_next_execution= cron.next_execution
+    assert_not_equal second_next_execution, next_execution
+    cron.day_of_week=1
+    cron.save
+    cron.reload
+    assert next_execution, cron.next_execution
+
+  end
+
 end
