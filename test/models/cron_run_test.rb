@@ -36,7 +36,7 @@ class CronRunTest < ActiveSupport::TestCase
     cron=crons(:one)
     cron.run!
     cron.reload
-    assert_equal cron.status, 'running'
+    assert_equal 'running', cron.status
   end
 
 end

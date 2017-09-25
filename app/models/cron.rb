@@ -69,4 +69,18 @@ class Cron < ApplicationRecord
     end
   end
 
+  def finish!
+    update(status: 'ok', last_execution: Time.now, next_execution: check_next_execution!)
+  end
+
+  def check_next_execution!
+    start_time = Date.today.to_time + (hour + 1).hours
+    loop do
+      end_time = start_time + 3599
+      break if in_range?(start_time, end_time)
+      start_time+=3600
+    end
+    start_time
+  end
+
 end

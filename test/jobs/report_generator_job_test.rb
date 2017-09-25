@@ -3,6 +3,7 @@ require 'test_helper'
 class ReportGeneratorJobTest < ActiveJob::TestCase
 
   setup do
+    @now=Time.now
     @date = Date.yesterday.at_beginning_of_month
     Report.where(start_date: @date).delete_all
 
@@ -22,7 +23,8 @@ class ReportGeneratorJobTest < ActiveJob::TestCase
     @fixture_vpcs.each do |vpc_id|
       stub_performance_error check_id: vpc_id, from: @date.to_time.to_i, to: to.to_i, resolution: 'hour'
     end
-    @history=ReportGeneratorJob.perform_now(@date)
+
+    @history=ReportGeneratorJob.perform_now(@date,cron: crons(:one))
   end
 
   teardown do
@@ -41,6 +43,8 @@ class ReportGeneratorJobTest < ActiveJob::TestCase
   test "history tracker" do
     assert_equal @history.history.status, 'started'
     assert_equal @history.status, 'finished'
+    assert_equal @history.cron.status, 'ok'
+    assert @history.cron.last_execution>@now
   end
 
 end

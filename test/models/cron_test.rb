@@ -67,5 +67,42 @@ class CronTest < ActiveSupport::TestCase
 
     assert cron.in_range?(february.to_time + 8.hours,february.to_time + 9.hours)
     assert_not cron.in_range?(march.to_time + 8.hours,march.to_time + 9.hours)
+
+  end
+
+  test "check_next_execution! on Monday" do
+
+    cron = crons(:at_8_on_monday)
+    date=Date.parse 'Monday'
+
+    assert cron.check_next_execution!> date.to_time
+    assert_equal cron.check_next_execution!.wday, 1
+    assert_equal cron.check_next_execution!.hour, 8
+
+  end
+
+  test "check_next_execution! on 1st of month" do
+
+    cron = crons(:at_8_on_1st_of_month)
+    date=Date.today.at_beginning_of_month
+
+    assert cron.check_next_execution!> date.to_time
+    assert_equal cron.check_next_execution!.hour, 8
+    assert_equal cron.check_next_execution!.mday, 1
+    assert cron.check_next_execution!.month>=date.month
+
+  end
+
+  test "check_next_execution! at 8 on February" do
+
+    cron = crons(:at_8_on_february)
+    date=Date.parse 'February'
+    date=date.prev_month.at_end_of_month
+
+    assert cron.check_next_execution!> date.to_time
+    assert_equal cron.check_next_execution!.month, 2
+    assert cron.check_next_execution!.month>date.month
+    assert_equal cron.check_next_execution!.hour, 8
+
   end
 end

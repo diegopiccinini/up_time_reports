@@ -61,6 +61,7 @@ class History < ApplicationRecord
       current = self.current
       current[:free]=true
       current[:end_history_id]=history.id
+      history.finish_cron
       GlobalSetting.set 'current_history', current
     end
     history
@@ -69,6 +70,10 @@ class History < ApplicationRecord
   def self.output text, lines_before=0, lines_after=0
     text = "\n" * lines_before + text + "\n" * lines_after
     puts text if self.verbose
+  end
+
+  def finish_cron
+    cron.finish! if cron
   end
 
 end
