@@ -111,13 +111,11 @@ class CronTest < ActiveSupport::TestCase
     cron.save
     next_execution= cron.next_execution
     assert_not_nil next_execution
-    cron.day_of_week=2
-    cron.save
+    cron.update(day_of_week: 2)
     cron.reload
     second_next_execution= cron.next_execution
     assert_not_equal second_next_execution, next_execution
-    cron.day_of_week=1
-    cron.save
+    cron.update(day_of_week: 1)
     cron.reload
     assert next_execution, cron.next_execution
 
