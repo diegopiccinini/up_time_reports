@@ -9,5 +9,7 @@ class GlobalSettingTest < ActiveSupport::TestCase
 
     get_hash = GlobalSetting.get 'test_var'
     assert_equal get_hash, data_hash
+
+    assert_not GlobalSetting.get 'not_existst'
   end
 end

@@ -8,7 +8,10 @@ class ReportGeneratorJobTest < ActiveJob::TestCase
 
     stub_checks
     to = (@date + 1).to_time
+    History.start 'Vpc Check'
     Vpc.update_from_checks
+    History.finish
+
     Vpc.checks.each do |check|
       stub_performance check_id: check.id, from: @date.to_time.to_i, to: to.to_i, resolution: 'hour'
       stub_outage check_id: check.id, from: @date.to_time.to_i, to: to.to_i

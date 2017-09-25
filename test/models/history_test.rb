@@ -41,4 +41,13 @@ class HistoryTest < ActiveSupport::TestCase
 
     assert_not out.include?"Hello"
   end
+
+  test "start" do
+    h= History.start 'Test'
+    current=History.current
+    assert_equal h.id, current[:started_history_id]
+    History.log text: 'Testing log'
+    assert_equal h.id, History.last.history_id
+  end
+
 end

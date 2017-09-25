@@ -3,7 +3,6 @@ class History < ApplicationRecord
   belongs_to :history, optional: true
 
   @@verbose = false
-  @@free= true
 
   def self.write text, lines_before=0, lines_after=0, level: 'info'
     if self.last and self.last.status!='finished'
@@ -21,30 +20,48 @@ class History < ApplicationRecord
   end
 
   def self.free
-    @@free
+    if self.current
+      self.current[:free]
+    else
+      self.reset
+    end
   end
 
-  def self.free= value
-    @@free=value
+  def self.reset
+    GlobalSetting.set 'current_history' , { free: true }
+  end
+
+  def self.current
+    GlobalSetting.get 'current_history'
   end
 
   def self.log text:, level: 'info', status: 'message'
-    self.create text: text, level: level, status: status, cron: self.last.cron, history: self.last.history
+    current= self.current
+    data = { text: text, level: level, status: status, history_id: current[:started_history_id] }
+    data[:cron_id] = current[:cron_id] if current[:cron_id]
+    self.create data
   end
 
   def self.start text, cron: nil
-    if @@free
-      h=self.create text: text, status: 'started', cron: cron
+    history=false
+    if self.free
+      history=self.create text: text, status: 'started', cron: cron
+      data =  { free: false, started_history_id: history.id }
+      data[:cron_id] = cron.id if cron
+      GlobalSetting.set 'current_history', data
       output text, 2, 2
-      h.update(history: h)
-      @@free=false
     end
+    history
   end
+
   def self.finish text=nil
     text = "*** Finish ***" unless text
     if history=self.log( text: text, status: 'finished')
       output text, 2, 2
-      @@free=true
+      current = self.current
+      current[:free]=true
+      current[:end_history_id]=history.id
+      GlobalSetting.set 'current_history', current
     end
     history
   end
