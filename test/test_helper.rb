@@ -5,7 +5,7 @@ require 'webmock/minitest'
 
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
-  fixtures [:reports, :vpcs, :jobs, :crons]
+  fixtures :all
 
   def fixtures_json name
     file =File.join('test','fixtures','files',name)

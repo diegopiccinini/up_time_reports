@@ -1,6 +1,7 @@
 require 'test_helper'
 
 class PerformanceTest < ActiveSupport::TestCase
+
   setup do
     @from = Date.yesterday.to_time
     @to = Date.today.to_time
@@ -8,7 +9,7 @@ class PerformanceTest < ActiveSupport::TestCase
     stub_performance(check_id: @report.vpc.id, from: @from.to_i, to: @to.to_i)
     @report.update_performances
     @report.update_outages
-
+    @one = performances(:one)
   end
 
   test "Scopes" do
@@ -23,5 +24,24 @@ class PerformanceTest < ActiveSupport::TestCase
     assert_equal @report.unmonitored, @report.performances_unmonitored
     assert @report.avgresponse>0
 
+  end
+
+  test "endtime" do
+    assert_equal @one.starttime.hour, 0
+    assert_equal @one.endtime.hour, 1
+  end
+
+  test "incidents" do
+    r=reports(:one)
+    assert_equal r.performances.count, 24
+    assert_equal performances(:one).incidents, 1
+    assert_equal performances(:two).incidents, 0
+    assert_equal performances(:seven).incidents, 1
+  end
+
+  test "adjust incidents" do
+    assert_equal performances(:one).adjusted_incidents, 0
+    assert_equal performances(:two).adjusted_incidents, 0
+    assert_equal performances(:seven).adjusted_incidents, 1
   end
 end

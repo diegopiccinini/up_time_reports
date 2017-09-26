@@ -1,17 +1,47 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  starttime: 2017-09-15 10:27:05
-  avgresponse: 1
-  uptime: 1
-  downtime: 1
-  unmonitored: 1
-  report: two
+  starttime: 2017-09-20 00:00:00
+  avgresponse: 120
+  uptime: 3500
+  downtime: 100
+  unmonitored: 0
+  report: three
 
 two:
-  starttime: 2017-09-15 10:27:05
-  avgresponse: 1
-  uptime: 1
-  downtime: 1
-  unmonitored: 1
-  report: two
+  starttime: 2017-09-20 01:00:00
+  avgresponse: 300
+  uptime: 3580
+  downtime: 20
+  unmonitored: 0
+  report: three
+
+<% 2.upto(6) do |i| %>
+fix_<%= i %>:
+  starttime: 2017-09-20 0<%= i%>:00:00
+  avgresponse: <%= rand(600) %>
+  uptime: 3600
+  downtime: 0
+  unmonitored: 0
+  report: three
+<% end %>
+
+seven:
+  starttime: 2017-09-20 07:00:00
+  avgresponse: 390
+  uptime: 1320
+  downtime: 600
+  unmonitored: 1680
+  report: three
+
+<% 8.upto(23) do |i| %>
+fix_<%= i %>:
+  starttime: 2017-09-20 <%= format("%02d",i)%>:00:00
+  avgresponse: <%= rand(600) %>
+  uptime: 3600
+  downtime: 0
+  unmonitored: 0
+  report: three
+<% end %>
+
+

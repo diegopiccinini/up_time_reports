@@ -12,6 +12,7 @@ one:
   check_type: 'http'
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>
+
 two:
   hostname: fixture2.com
   lasterrortime: 2017-09-14 15:53:22
@@ -22,5 +23,18 @@ two:
   status: 'start'
   customer: two
   check_type: 'ping'
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
+
+three:
+  hostname: fixture3.com
+  lasterrortime: 2017-09-14 15:53:22
+  lastresponsetime: 1
+  lasttesttime: 2017-09-14 15:53:22
+  name: Third Fixture Server
+  resolution: 1
+  status: 'start'
+  customer: two
+  check_type: 'http'
   created_at: <%= Time.now %>
   updated_at: <%= Time.now %>

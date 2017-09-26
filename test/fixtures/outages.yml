@@ -1,13 +1,37 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  timefrom: 2017-09-20 09:36:32
-  timeto: 2017-09-20 09:36:32
-  status: MyString
-  report: two
+  timefrom: 2017-09-20 00:00:00
+  timeto: 2017-09-20 00:59:00
+  status: up
+  report: three
 
 two:
-  timefrom: 2017-09-20 09:36:32
-  timeto: 2017-09-20 09:36:32
-  status: MyString
-  report: two
+  timefrom: 2017-09-20 00:59:00
+  timeto: 2017-09-20 01:01:00
+  status: down
+  report: three
+
+three:
+  timefrom: 2017-09-20 01:01:00
+  timeto: 2017-09-20 07:22:00
+  status: up
+  report: three
+
+four:
+  timefrom: 2017-09-20 07:22:00
+  timeto: 2017-09-20 07:50:00
+  status: unknown
+  report: three
+
+five:
+  timefrom: 2017-09-20 07:50:00
+  timeto: 2017-09-20 08:00:00
+  status: down
+  report: three
+
+six:
+  timefrom: 2017-09-20 08:00:00
+  timeto: 2017-09-21 00:00:00
+  status: up
+  report: three

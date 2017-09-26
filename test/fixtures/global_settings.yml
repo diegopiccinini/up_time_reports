@@ -9,6 +9,5 @@ one:
       - ready to build the data spreadsheet
 
 two:
-  name: Filters
-  data:
-    minimun_downtime: 120
+  name: adjust_interval
+  data: "{\"value\": 180 }"

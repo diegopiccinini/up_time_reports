@@ -10,7 +10,9 @@ class ReportGeneratorJobTest < ActiveJob::TestCase
     stub_checks
     to = (@date + 1).to_time
 
+    History.start "Vpc Jobs"
     Vpc.update_from_checks
+    History.finish
 
     Vpc.checks.each do |check|
       stub_performance check_id: check.id, from: @date.to_time.to_i, to: to.to_i, resolution: 'hour'
@@ -31,12 +33,14 @@ class ReportGeneratorJobTest < ActiveJob::TestCase
   end
 
   test "reports outage was saved" do
-    assert_equal Report.where(start_date: @date).count,5
+
+    assert_equal Report.where(start_date: @date).count, Vpc.count
 
     # fixture errors saved
-    assert_equal Report.performances_saved_total(@date).count,2
+    assert_equal Report.performances_saved_total(@date).count, @fixture_vpcs.count
     # outage saved
-    assert_equal Report.outages_saved(@date).count,3
+    outage_saved= Vpc.count - @fixture_vpcs.count
+    assert_equal Report.outages_saved(@date).count, outage_saved
   end
 
   test "history tracker" do
