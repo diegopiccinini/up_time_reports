@@ -39,8 +39,6 @@ class Report < ApplicationRecord
 
     self.by_date_and_period( date, period ).destroy_all
 
-    Vpc.update_from_checks
-
     to = case period
          when 'day'
            date.next_day

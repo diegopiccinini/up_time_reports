@@ -9,6 +9,8 @@ class Cron < ApplicationRecord
   validate :day_of_week_validation
   validate :day_of_month_validation
 
+  scope :to_run,-> { where( "next_execution < ?",DateTime.now) }
+
   before_save do |cron|
     fields_to_check = %w(last_execution hour month day_of_week day_of_month)
     if next_execution.nil? or ( fields_to_check - changed ).count < fields_to_check.count

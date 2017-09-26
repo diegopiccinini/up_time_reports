@@ -12,6 +12,8 @@ class Job < ApplicationRecord
       date=Date.today.prev_month.at_beginning_of_month
       date-= 1 until date.wday=1 #beginning on monday
       ReportGeneratorJob.perform_now(date, period: 'month', resolution: 'day', cron: cron)
+    when 'Vpc Update'
+      VpcUpdateJob.perform_now(cron: cron)
     end
     result
   end

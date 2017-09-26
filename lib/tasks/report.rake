@@ -32,8 +32,15 @@ namespace :report do
 
   end
 
-  desc "TODO"
-  task by_year: :environment do
+  desc "execute the cron"
+  task cron: :environment do
+
+    puts "There is not a cron to run" if Cron.to_run.count<1
+
+    Cron.to_run do |cron|
+      cron.run!
+    end
+
   end
 
 end

@@ -122,4 +122,11 @@ class CronTest < ActiveSupport::TestCase
 
   end
 
+  test "to_run scope" do
+    Cron.delete_all
+    cron=Cron.create name: 'test', job: jobs(:one), hour: (Time.now.hour - 1)
+    cron.update(next_execution: Time.now)
+    assert_equal Cron.to_run.count, 1
+  end
+
 end

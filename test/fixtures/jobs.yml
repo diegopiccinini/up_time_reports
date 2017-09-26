@@ -12,5 +12,8 @@ monthly_vpc_reports_with_day_resolution:
 monthly_vpc_reports_with_week_resolution:
   name: Initialize Monthly Vpc Reports with week Resolution
 
+vpc_update:
+  name: Vpc Update
+
 one:
   name: Fixture Job
