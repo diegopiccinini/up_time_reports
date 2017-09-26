@@ -25,10 +25,12 @@ namespace :report do
     raise "I haven't the time machine to get a report for #{to}" if to>Date.today
     raise "#{from} date must be before #{to} date" if from>to
 
+    History.verbose= true
     while from<to do
       ReportGeneratorJob.perform_async(from)
       from+=1
     end
+    History.verbose= false
 
   end
 
@@ -37,9 +39,11 @@ namespace :report do
 
     puts "There is not a cron to run" if Cron.to_run.count<1
 
-    Cron.to_run do |cron|
+    History.verbose= true
+    Cron.to_run.each do |cron|
       cron.run!
     end
+    History.verbose= false
 
   end
 

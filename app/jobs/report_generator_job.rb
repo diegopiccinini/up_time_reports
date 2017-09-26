@@ -6,19 +6,23 @@ class ReportGeneratorJob < ApplicationJob
 
     history= History.free
 
-    ActiveRecord::Base.connection_pool.with_connection do
+    if history
+      ActiveRecord::Base.connection_pool.with_connection do
 
-      History.start "Starting #{self.class.name} on #{date}, #{period} period and #{resolution} resolution", cron: cron
+        History.start "Starting #{self.class.name} on #{date}, #{period} period and #{resolution} resolution", cron: cron
 
-      Report.start date , period: period, resolution: resolution
+        Report.start date , period: period, resolution: resolution
 
-      Report.save_performances date, period
+        Report.save_performances date, period
 
-      Report.save_outages date, period
+        Report.save_outages date, period
 
-      history = History.finish
+        history = History.finish
 
-    end if history
+      end
+    elsif cron
+      cron.update(status: 'enqueue')
+    end
 
     history
 

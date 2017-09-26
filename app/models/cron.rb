@@ -69,12 +69,7 @@ class Cron < ApplicationRecord
   end
 
   def run!
-    history=job.run!(self)
-    if history.is_a?(History)
-      update status: 'running'
-    else
-      update status: 'enqueue'
-    end
+   job.run!(self)
   end
 
   def finish!

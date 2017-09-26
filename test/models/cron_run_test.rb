@@ -35,7 +35,6 @@ class CronRunTest < ActiveSupport::TestCase
     daily_setup
     cron=crons(:one)
     cron.run!
-    cron.reload
     assert_equal 'running', cron.status
   end
 

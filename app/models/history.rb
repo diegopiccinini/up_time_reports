@@ -46,6 +46,7 @@ class History < ApplicationRecord
     history=false
     if self.free
       history=self.create text: text, status: 'started', cron: cron
+      history.running_cron
       data =  { free: false, started_history_id: history.id }
       data[:cron_id] = cron.id if cron
       GlobalSetting.set 'current_history', data
@@ -74,6 +75,10 @@ class History < ApplicationRecord
 
   def finish_cron
     cron.finish! if cron
+  end
+
+  def running_cron
+    cron.update(status: 'running') if cron
   end
 
 end
