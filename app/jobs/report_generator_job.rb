@@ -13,9 +13,12 @@ class ReportGeneratorJob < ApplicationJob
 
         Report.start date , period: period, resolution: resolution
 
-        Report.save_performances date, period unless resolution=='month'
-
-        Report.save_outages date, period
+        if resolution=='month'
+          Report.save_year_outages date
+        else
+          Report.save_performances date, period
+          Report.save_outages date, period
+        end
 
         history = History.finish
 

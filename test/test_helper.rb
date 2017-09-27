@@ -28,7 +28,7 @@ class ActiveSupport::TestCase
   end
 
   def stub_performance(check_id:,from:,to:, resolution: 'hour')
-    stub_outage(check_id: check_id, from: from, to: to)
+    stub_outage(check_id: check_id, from: from, to: to, resolution: resolution)
     body= performance_json(check_id,from,to,resolution)
     stub_pingdom path: performance_path(check_id,from,to,resolution), body: body
   end
@@ -37,8 +37,8 @@ class ActiveSupport::TestCase
     stub_pingdom path: performance_path(check_id,from,to,resolution), body: '', status: 401
   end
 
-  def stub_outage(check_id:, from:, to:)
-    body=outage_json(check_id,from, to)
+  def stub_outage(check_id:, from:, to:, resolution: 'hour')
+    body=outage_json(check_id,from, to,resolution)
     stub_pingdom path: "/summary.outage/#{check_id}?from=#{from}&to=#{to}", body: body
   end
 
@@ -58,31 +58,31 @@ class ActiveSupport::TestCase
     "/summary.performance/#{check_id}?from=#{from}&includeuptime=true&resolution=#{resolution}&to=#{to}"
   end
 
-  def outage_json check_id,from, to
-    outage_build_data(check_id,from,to).to_json
+  def outage_json check_id,from, to,resolution='hour'
+    outage_build_data(check_id,from,to,resolution).to_json
   end
 
-  def outage_build_data check_id,from, to
+  def outage_build_data check_id,from, to, resolution='hour'
 
-    unless outage_data(check_id,from,to)
+    unless outage_data(check_id,from,to,resolution)
       status='up'
       collection = []
       timefrom=from
       loop do
-        timeto=timefrom + (status=='up' ? rand(6 * 3600) : rand(1000))
+        timeto=timefrom + (status=='up' ? rand(6 * 1.send(resolution).to_i) : rand(1000))
         timeto=to if timeto>=to
         collection << { status: status, timefrom: timefrom, timeto: timeto }
         break if timeto==to
         timefrom=timeto
         status = (%w(up down unknown) - [status]).shuffle.first
       end
-      GlobalSetting.create name: to_key('outage_data',check_id,from,to), data: { summary: { states: collection }}.to_json
+      GlobalSetting.create name: to_key('outage_data',check_id,from,to,resolution), data: { summary: { states: collection }}.to_json
     end
-    outage_data(check_id,from,to)
+    outage_data(check_id,from,to,resolution)
   end
 
-  def outage_data check_id,from, to
-    GlobalSetting.get to_key('outage_data',check_id,from,to)
+  def outage_data check_id,from, to, resolution='hour'
+    GlobalSetting.get to_key('outage_data',check_id,from,to,resolution)
   end
 
   def performance_json check_id,from,to,resolution='hour'
@@ -97,20 +97,13 @@ class ActiveSupport::TestCase
 
     unless performance_data(check_id,from,to,resolution)
       units = {}
-      time_period = case resolution
-                    when 'day'
-                      3600 * 24
-                    when 'week'
-                      3600 * 24 * 7
-                    else
-                      3600
-                    end
+      time_period = 1.send(resolution).to_i
 
       from.step(to - time_period,time_period) do |x|
         units[x]={ starttime: x, avgresponse: rand(1000), uptime: 0, downtime: 0, unmonitored: 0 }
       end
 
-      data=outage_data(check_id,from,to)[:summary][:states]
+      data=outage_data(check_id,from,to,resolution)[:summary][:states]
 
       units.keys.each do |h|
         next_h = h + time_period

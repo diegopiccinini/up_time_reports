@@ -6,12 +6,22 @@ class VpcReportBuilderTest < ActiveSupport::TestCase
     from =report.from.to_i
     to = report.to.to_i
     resolution= report.resolution
-    outage_build_data(report.vpc.id,from,to)[:summary][:states].each do |outage|
-
+    outage_build_data(report.vpc.id,from,to,resolution)[:summary][:states].each do |outage|
       report.outages.create to_time( outage, [:timefrom, :timeto])
     end
     performance_build_data(report.vpc.id, from,to,resolution)[:summary][resolution.pluralize.to_sym].each do |performance|
       report.performances.create to_time(performance, [:starttime])
+    end
+  end
+
+  def build_year_report_data report
+    from =report.from
+    1.upto(12) do |m|
+      to = from.next_month
+      outage_build_data(report.vpc.id,from.to_i,to.to_i, 'day')[:summary][:states].each do |outage|
+        report.outages.create to_time( outage, [:timefrom, :timeto])
+        from=to
+      end
     end
   end
 
@@ -22,21 +32,26 @@ class VpcReportBuilderTest < ActiveSupport::TestCase
     hash
   end
 
-  setup do
-    @three= VpcReportBuilder.new(reports(:three))
-    @two= VpcReportBuilder.new(reports(:two))
-    build_report_data reports(:two)
+  def by_report key
+    build_report_data reports(key)
+    VpcReportBuilder.new(reports(key))
   end
 
-  test "#periodically" do
-    assert_equal @three.periodically, 'daily'
-    assert_equal @two.periodically, 'weekly'
+  setup do
+    @three= VpcReportBuilder.new(reports(:three))
+    @two=by_report :two
+    @month_daily= by_report :month_daily
+    @month_weekly= by_report :month_weekly
+    build_year_report_data reports(:year_monthly)
+    @year_monthly=VpcReportBuilder.new(reports(:year_monthly))
   end
+
 
   test "#spreadsheet_name" do
     report=reports(:three)
     assert @three.spreadsheet_name.include?(report.vpc.name)
     assert @three.spreadsheet_name.include?(report.vpc.hostname)
+    assert @three.spreadsheet_name.include?(report.period)
     assert @three.spreadsheet_name.include?(report.resolution)
     assert @three.spreadsheet_name.include?(report.start_date.to_s)
   end
@@ -54,5 +69,18 @@ class VpcReportBuilderTest < ActiveSupport::TestCase
     assert_equal @three.data[:rows].count, 25
     @two.build
     assert_equal @two.data[:rows].count, 8
+
+    @month_daily.build
+    assert_equal @month_daily.data[:rows].count, Date.today.prev_month.at_end_of_month.day + 1
+
+    @month_weekly.build
+    assert @month_weekly.data[:rows].count, 4
+
+    @year_monthly.build
+    assert @year_monthly.data[:rows].count, 13
+  end
+
+  test "#outages_by_month" do
+    assert_equal @year_monthly.outages_by_month.count, 12
   end
 end

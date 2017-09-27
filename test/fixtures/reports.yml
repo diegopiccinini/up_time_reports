@@ -39,7 +39,7 @@ month_daily:
   start_date: <%= date %>
   status: outages saved
   from: <%= date.to_time %>
-  to: <%= date.next_week.to_time %>
+  to: <%= date.next_month.to_time %>
   data:
   vpc: two
 
@@ -67,7 +67,7 @@ month_weekly:
    to = from.next_year
 %>
 
-year_month:
+year_monthly:
   resolution: month
   period: year
   start_date: <%= date %>

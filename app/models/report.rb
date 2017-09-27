@@ -80,18 +80,23 @@ class Report < ApplicationRecord
     step filter_scope: :performances_saved, update_method: :update_outages, status: 'outages saved', date: date, period: period
   end
 
+  def self.save_year_outages date
+    History.write "** Saving outages",2,2
+    step filter_scope: :started, update_method: :update_year_outages, status: 'outages saved', date: date, period: 'year'
+  end
+
   def self.step filter_scope:, update_method: , status: , date:, period:
     self.send(filter_scope,date,period).each do |report|
-    begin
-      History.write "\t#{update_method} on #{report.vpc.name}"
-      report.send(update_method)
-      report.status = status
-    rescue
-      History.write "\t#{update_method} error on #{report.vpc.name}", level: 'error'
-      report.status = status + ' error'
+      begin
+        History.write "\t#{update_method} on #{report.vpc.name}"
+        report.send(update_method)
+        report.status = status
+      rescue
+        History.write "\t#{update_method} error on #{report.vpc.name}", level: 'error'
+        report.status = status + ' error'
+      end
+      report.save
     end
-    report.save
-  end
   end
 
   def update_performances
@@ -104,9 +109,24 @@ class Report < ApplicationRecord
 
   def update_outages
     outages.delete_all
-    outage=Pingdom::SummaryOutage.find vpc.id, from: from, to: to
-    outage.states.each do |s|
+    pingdom_outages=Pingdom::SummaryOutage.find vpc.id, from: from, to: to
+    create_outages_from_pingdom pingdom_outages.states
+  end
+
+  def create_outages_from_pingdom states
+    states.each do |s|
       outages.create status: s.status, timefrom: s.timefrom, timeto: s.timeto
+    end
+  end
+
+  def update_year_outages
+    outages.delete_all
+    starting_at=from
+    1.upto(12) do |month|
+      next_month=starting_at.next_month
+      pingdom_outages=Pingdom::SummaryOutage.find vpc.id, from: starting_at, to: next_month
+      create_outages_from_pingdom pingdom_outages.states
+      starting_at= next_month
     end
   end
 

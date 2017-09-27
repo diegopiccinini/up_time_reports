@@ -8,7 +8,6 @@ class ReportGeneratorTest < ActiveSupport::TestCase
     Vpc.update_from_checks
     # the fixture vpcs cannot get a performance
     @fixture_vpcs=Vpc.where("name like ?",'%Fixture%').all.map { |vpc| vpc.id }
-
   end
 
   teardown do
