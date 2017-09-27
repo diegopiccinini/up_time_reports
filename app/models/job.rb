@@ -12,6 +12,9 @@ class Job < ApplicationRecord
       date=Date.today.prev_month.at_beginning_of_month
       date-= 1 until date.wday=1 #beginning on monday
       ReportGeneratorJob.perform_now(date, period: 'month', resolution: 'day', cron: cron)
+    when 'Initialize Yearly Vpc Reports with month Resolution'
+      date=Date.today.prev_year.at_beginning_of_year
+      ReportGeneratorJob.perform_now(date, period: 'year', resolution: 'month', cron: cron)
     when 'Vpc Update'
       VpcUpdateJob.perform_now(cron: cron)
     end

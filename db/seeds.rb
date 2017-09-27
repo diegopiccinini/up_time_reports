@@ -23,4 +23,7 @@ job=Job.find_or_create_by name: 'Vpc Update'
 Cron.find_or_create_by name: "#{job.name} every day at 7:00 AM", hour: 7, job: job
 
 
+job=Job.find_or_create_by name: 'Initialize Yearly Vpc Reports with month Resolution'
+Cron.find_or_create_by name: "#{job.name}, every 2nd of Junuary at 3:00 AM", hour: 3, day_of_month: 2, month: 1, job: job
+
 GlobalSetting.set 'adjust_interval', { value: 180 }
