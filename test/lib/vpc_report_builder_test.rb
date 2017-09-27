@@ -7,19 +7,25 @@ class VpcReportBuilderTest < ActiveSupport::TestCase
     to = report.to.to_i
     resolution= report.resolution
     outage_build_data(report.vpc.id,from,to)[:summary][:states].each do |outage|
-      report.outages.create outage
+
+      report.outages.create to_time( outage, [:timefrom, :timeto])
     end
     performance_build_data(report.vpc.id, from,to,resolution)[:summary][resolution.pluralize.to_sym].each do |performance|
-      report.performances.create performance
+      report.performances.create to_time(performance, [:starttime])
     end
+  end
+
+  def to_time hash, keys
+    hash.each_pair do |key, value|
+      hash[key]= Time.at(value) if keys.include?key
+    end
+    hash
   end
 
   setup do
     @three= VpcReportBuilder.new(reports(:three))
     @two= VpcReportBuilder.new(reports(:two))
-
     build_report_data reports(:two)
-
   end
 
   test "#periodically" do
@@ -46,5 +52,7 @@ class VpcReportBuilderTest < ActiveSupport::TestCase
   test "#build" do
     @three.build
     assert_equal @three.data[:rows].count, 25
+    @two.build
+    assert_equal @two.data[:rows].count, 8
   end
 end

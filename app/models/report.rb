@@ -11,7 +11,7 @@ class Report < ApplicationRecord
   has_many :outages, :dependent => :delete_all
 
   PERIODS = %w(day week month year)
-  RESOLUTIONS =  %w(hour day week)
+  RESOLUTIONS =  %w(hour day week month)
 
   scope :by_period, -> (period='day') { where( period: period ) }
   scope :by_date, -> (date) { where( start_date: date ) }
@@ -52,6 +52,8 @@ class Report < ApplicationRecord
            else
              date.next_month
            end
+         when 'year'
+           date.next_year
          end
 
     Vpc.all.each do |vpc|

@@ -10,14 +10,14 @@ one:
   data:
   vpc: one
 
-<% date_two = Date.parse('Monday').prev_week %>
+<% date = Date.parse('Monday').prev_week %>
 two:
   resolution: day
   period: week
-  start_date: <%= date_two %>
+  start_date: <%= date %>
   status: outages saved
-  from: <%= date_two.to_time %>
-  to: <%= date_two.next_week.to_time %>
+  from: <%= date.to_time %>
+  to: <%= date.next_week.to_time %>
   data:
   vpc: two
 
@@ -30,3 +30,50 @@ three:
   to: 2017-09-21 00:00:00
   data:
   vpc: three
+
+
+<% date = Date.today.prev_month.at_beginning_of_month %>
+month_daily:
+  resolution: day
+  period: month
+  start_date: <%= date %>
+  status: outages saved
+  from: <%= date.to_time %>
+  to: <%= date.next_week.to_time %>
+  data:
+  vpc: two
+
+<%
+   date= Date.today
+   from = date.prev_month.at_beginning_of_month
+   from-=1 until from.wday == 1
+   to = date.at_beginning_of_month
+   to-=1 until to.wday == 1
+%>
+
+month_weekly:
+  resolution: week
+  period: month
+  start_date: <%= date %>
+  status: outages saved
+  from: <%= from.to_time %>
+  to: <%= to.to_time %>
+  data:
+  vpc: two
+
+<%
+   date = Date.today.prev_year.at_beginning_of_year
+   from = date
+   to = from.next_year
+%>
+
+year_month:
+  resolution: month
+  period: year
+  start_date: <%= date %>
+  status: outages saved
+  from: <%= from.to_time %>
+  to: <%= to.to_time %>
+  data:
+  vpc: two
+
