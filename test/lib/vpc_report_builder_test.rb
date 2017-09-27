@@ -2,14 +2,29 @@ require 'test_helper'
 
 class VpcReportBuilderTest < ActiveSupport::TestCase
 
+  def build_report_data report
+    from =report.from.to_i
+    to = report.to.to_i
+    resolution= report.resolution
+    outage_build_data(report.vpc.id,from,to)[:summary][:states].each do |outage|
+      report.outages.create outage
+    end
+    performance_build_data(report.vpc.id, from,to,resolution)[:summary][resolution.pluralize.to_sym].each do |performance|
+      report.performances.create performance
+    end
+  end
+
   setup do
     @three= VpcReportBuilder.new(reports(:three))
     @two= VpcReportBuilder.new(reports(:two))
+
+    build_report_data reports(:two)
+
   end
 
-  test "#period" do
-    assert_equal @three.period, 'daily'
-    assert_equal @two.period, 'weekly'
+  test "#periodically" do
+    assert_equal @three.periodically, 'daily'
+    assert_equal @two.periodically, 'weekly'
   end
 
   test "#spreadsheet_name" do

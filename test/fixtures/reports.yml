@@ -10,13 +10,14 @@ one:
   data:
   vpc: one
 
+<% date_two = Date.parse('Monday').prev_week %>
 two:
   resolution: day
   period: week
-  start_date: <%= Date.yesterday %>
+  start_date: <%= date_two %>
   status: outages saved
-  from: <%= Date.yesterday.to_time %>
-  to: <%= Date.today.to_time %>
+  from: <%= date_two.to_time %>
+  to: <%= date_two.next_week.to_time %>
   data:
   vpc: two
 
