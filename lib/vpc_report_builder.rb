@@ -30,6 +30,9 @@ class VpcReportBuilder
   def build
     header = [[resolution.capitalize,'Outages', 'Downtime', 'Uptime', 'real uptime', 'Adjusted Outages', 'Adjusted Downtime', 'Adjusted Uptime']]
     data[:rows]= header + rows
+    report.status = 'JSON ready'
+    report.data = data.to_json
+    report.save
   end
 
   def rows

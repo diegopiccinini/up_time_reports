@@ -1,22 +1,45 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 daily_vpc_reports:
-  name: Initialize Daily Vpc Reports
+  name: Initialize Daily VPC Reports
+  source: |
+    ReportGeneratorJob.perform_now(Date.yesterday, cron: cron)
 
 weekly_vpc_reports:
-  name: Initialize Weekly Vpc Reports
+  name: Initialize Weekly VPC Reports
+  source: |
+    ReportGeneratorJob.perform_now(Date.parse('Monday').prev_week, period: 'week', resolution: 'day', cron: cron)
 
 monthly_vpc_reports_with_day_resolution:
-  name: Initialize Monthly Vpc Reports with day Resolution
+  name: Initialize Monthly VPC Reports with day Resolution
+  source: |
+    ReportGeneratorJob.perform_now(Date.today.prev_month.at_beginning_of_month, period: 'month', resolution: 'day', cron: cron)
 
 monthly_vpc_reports_with_week_resolution:
-  name: Initialize Monthly Vpc Reports with week Resolution
+  name: Initialize Monthly VPC Reports with week Resolution
+  source: |
+    date=Date.today.prev_month.at_beginning_of_month
+    date-= 1 until date.wday=1 #beginning on monday
+    ReportGeneratorJob.perform_now(date, period: 'month', resolution: 'day', cron: cron)
 
 yearly_vpc_reports_with_month_resolution:
-  name: Initialize Yearly Vpc Reports with month Resolution
+  name: Initialize Yearly VPC Reports with month Resolution
+  source: |
+    date=Date.today.prev_year.at_beginning_of_year
+    ReportGeneratorJob.perform_now(date, period: 'year', resolution: 'month', cron: cron)
 
 vpc_update:
-  name: Vpc Update
+  name: VPC Update
+  source: |
+    VpcUpdateJob.perform_now(cron: cron)
+
+report_body:
+  name: Build VPC Reports JSON Body
+  source: |
+    ReportBodyJob.perform_now
 
 one:
   name: Fixture Job
+  source: |
+    local_var = 'Hello'
+    local_var

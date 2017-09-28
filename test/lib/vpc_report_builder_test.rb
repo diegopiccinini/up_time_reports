@@ -78,6 +78,9 @@ class VpcReportBuilderTest < ActiveSupport::TestCase
 
     @year_monthly.build
     assert @year_monthly.data[:rows].count, 13
+
+    assert_equal Report.json_ready.count, 5
+
   end
 
   test "#outages_by_month" do

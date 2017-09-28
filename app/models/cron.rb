@@ -69,7 +69,8 @@ class Cron < ApplicationRecord
   end
 
   def run!
-   job.run!(self)
+   job.run! cron: self
+   job.out
   end
 
   def finish!

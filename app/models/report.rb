@@ -27,6 +27,7 @@ class Report < ApplicationRecord
   end
   scope :outages_saved, -> (date, period='day') { by_date_and_period(date,period).where( status: 'outages saved' ) }
   scope :outages_saved_total, -> (date, period='day') { by_date_and_period(date,period).where( "status LIKE ?", 'outages saved%' ) }
+  scope :json_ready, -> { where( status: 'JSON ready') }
 
 
   def self.server_time
