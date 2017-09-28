@@ -60,3 +60,5 @@ Cron.find_or_create_by name: "#{job.name}, every day at 8:00 AM", hour: 8, job: 
 Cron.find_or_create_by name: "#{job.name}, every day at 3:00 PM", hour: 15, job: job
 
 GlobalSetting.set 'adjust_interval', { value: 180 }
+
+AdminUser.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password') if Rails.env.development?
