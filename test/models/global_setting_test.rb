@@ -12,4 +12,9 @@ class GlobalSettingTest < ActiveSupport::TestCase
 
     assert_not GlobalSetting.get 'not_existst'
   end
+
+  test "#adjust_interval" do
+    assert GlobalSetting.adjust_interval>0
+  end
+
 end

@@ -57,7 +57,7 @@ class Performance < ApplicationRecord
   end
 
   def adjusted_downtime
-    downtime < adjust_interval ? 0 : downtime
+    downtime < adjust_interval ? 0 : downtime / 60
   end
 
   def adjusted_uptime
@@ -65,8 +65,7 @@ class Performance < ApplicationRecord
   end
 
   def adjust_interval
-    @adjust_interval||=GlobalSetting.get('adjust_interval')[:value]
-    @adjust_interval
+    GlobalSetting.adjust_interval
   end
 
   def percent n

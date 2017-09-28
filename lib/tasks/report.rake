@@ -49,4 +49,12 @@ namespace :report do
 
   end
 
+  desc "Build report"
+  task :build, [:id] => :environment do |t, args|
+    report=Report.find args.id
+    builder=VpcReportBuilder.new report
+    builder.build
+  end
+
+
 end

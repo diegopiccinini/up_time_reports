@@ -1,5 +1,7 @@
 class GlobalSetting < ApplicationRecord
 
+  @@adjust_interval= nil
+
   def self.get name
     s=self.find_by name: name
     s ? JSON.parse(s.data,symbolize_names: true) : false
@@ -11,4 +13,7 @@ class GlobalSetting < ApplicationRecord
     s.save
   end
 
+  def self.adjust_interval
+    @@adjust_interval||=GlobalSetting.get('adjust_interval')[:value]
+  end
 end

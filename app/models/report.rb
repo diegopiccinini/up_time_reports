@@ -159,6 +159,11 @@ class Report < ApplicationRecord
     performances.count>0 ? performances.total_avg/performances.count : 0
   end
 
+  def data_hash
+    JSON.parse data, symbolize_names: true
+  end
+
+
   private
 
   def validate_period
