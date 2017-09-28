@@ -59,12 +59,10 @@ class VpcReportBuilder
       real_downtime=report.outages.down(from,to).sum { |outage| outage.interval }
       uptime=percent (downtime * 60) , interval
       real_uptime=percent real_downtime, interval
-      adjusted_outages= report.outages.down(from,to).count do |outage|
-        outage.interval < adjust_interval
-      end
+      adjusted_outages= report.outages.down(from,to).adjusted.count
 
-      adjusted_downtime= report.outages.down(from,to).sum do |outage|
-        outage.interval < adjust_interval ? 0 : (outage.interval / 60)
+      adjusted_downtime= report.outages.down(from,to).adjusted.sum do |outage|
+        outage.interval / 60
       end
       adjust_uptime = percent (adjusted_downtime * 60), interval
 
@@ -74,13 +72,12 @@ class VpcReportBuilder
   end
 
   def percent partial_time , under
-    n = (partial_time.to_f) * 100.0 / under.to_f
-    format("%.3f%", n )
+    n = (under.to_f - partial_time.to_f) * 100.0 / under.to_f
+    format("%.3f %", n )
   end
 
   def adjust_interval
-    @adjust_interval||=GlobalSetting.get('adjust_interval')[:value]
-    @adjust_interval
+    GlobalSetting.adjust_interval
   end
 
 end

@@ -11,9 +11,7 @@ class Performance < ApplicationRecord
   end
 
   def adjusted_incidents
-    outage_incidents.count do |outage|
-      outage.interval > adjust_interval
-    end
+    report.outages.where(timefrom: starttime..endtime).adjusted.count
   end
 
   def endtime
@@ -57,7 +55,7 @@ class Performance < ApplicationRecord
   end
 
   def adjusted_downtime
-    downtime < adjust_interval ? 0 : downtime / 60
+    downtime_in_minutes - (incidents - adjusted_incidents)
   end
 
   def adjusted_uptime
@@ -70,7 +68,7 @@ class Performance < ApplicationRecord
 
   def percent n
     n = (1.send(report.resolution).to_f - n.to_f) * 100.0 / 1.send(report.resolution).to_f
-    format("%.3f%", n )
+    format("%.3f %", n )
   end
 
 end

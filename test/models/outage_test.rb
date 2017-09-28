@@ -42,9 +42,9 @@ class OutageTest < ActiveSupport::TestCase
     assert_equal @report.unmonitored, unmonitored
 
 
-    total_down=Outage.where(status: 'down').count
+    total=Outage.count
     adjusted= Outage.adjusted.count
-    assert adjusted<total_down
+    assert adjusted<total
     Outage.adjusted.each do |o|
       o.interval<GlobalSetting.adjust_interval
     end
