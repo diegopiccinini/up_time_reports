@@ -11,9 +11,9 @@ class VpcUpdateJob < ApplicationJob
 
         History.start "Starting #{self.class.name} on #{Time.now}", cron: cron
 
-        Vpc.update_from_checks
-
-        history = History.finish
+        history= History.execution do
+          Vpc.update_from_checks
+        end
 
       end
     elsif cron

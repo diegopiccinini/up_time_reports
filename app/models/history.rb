@@ -55,14 +55,14 @@ class History < ApplicationRecord
     history
   end
 
-  def self.finish text=nil
+  def self.finish text=nil, cron_status: 'ok'
     text = "*** Finish ***" unless text
     if history=self.log( text: text, status: 'finished')
       output text, 2, 2
       current = self.current
       current[:free]=true
       current[:end_history_id]=history.id
-      history.finish_cron
+      history.finish_cron cron_status: cron_status
       GlobalSetting.set 'current_history', current
     end
     history
@@ -73,8 +73,24 @@ class History < ApplicationRecord
     puts text if self.verbose
   end
 
-  def finish_cron
-    cron.finish! if cron
+  def self.execution
+    begin
+
+      yield
+
+      cron_status='ok'
+
+    rescue => e
+      cron_status='error'
+      cron.update(message: e.message) if cron
+      History.write "Error: #{e.message}", level: cron_status
+    end
+
+    History.finish cron_status: cron_status
+  end
+
+  def finish_cron cron_status: 'ok'
+    cron.finish! status: cron_status if cron
   end
 
   def running_cron

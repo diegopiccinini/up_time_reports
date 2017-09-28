@@ -73,8 +73,8 @@ class Cron < ApplicationRecord
    job.out
   end
 
-  def finish!
-    update(status: 'ok', last_execution: Time.now)
+  def finish! status: 'ok'
+    update(status: status, last_execution: Time.now)
   end
 
   def check_next_execution!

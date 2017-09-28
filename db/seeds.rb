@@ -54,7 +54,7 @@ Cron.find_or_create_by name: "#{job.name}, every 2nd of Junuary at 3:00 AM", hou
 
 
 job=Job.find_or_create_by name: 'Build VPC Reports JSON Body'
-source = %Q{ ReportBodyJob.perform_now }
+source = %Q{ ReportBodyJob.perform_now(cron: cron) }
 job.update( source: source)
 Cron.find_or_create_by name: "#{job.name}, every day at 8:00 AM", hour: 8, job: job
 Cron.find_or_create_by name: "#{job.name}, every day at 3:00 PM", hour: 15, job: job

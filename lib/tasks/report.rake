@@ -1,3 +1,5 @@
+require File.join(Rails.root, 'lib', 'vpc_report_builder')
+
 namespace :report do
 
   desc "To creates yesterday reports"
