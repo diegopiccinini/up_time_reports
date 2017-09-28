@@ -12,8 +12,7 @@ Job.delete_all
 job=Job.find_or_create_by name: 'Initialize Daily VPC Reports'
 source= %Q{ ReportGeneratorJob.perform_now(Date.yesterday, cron: cron) }
 job.update( source: source)
-cron=Cron.find_or_create_by name: "#{job.name}, every day at 4:00 AM", hour: 4, job: job
-cron.update(next_execution: Time.now)
+Cron.find_or_create_by name: "#{job.name}, every day at 4:00 AM", hour: 4, job: job
 
 
 job=Job.find_or_create_by name: 'Initialize Weekly VPC Reports'
@@ -41,7 +40,8 @@ Cron.find_or_create_by name: "#{job.name}, every 2nd of month at 13:00 ", hour: 
 job=Job.find_or_create_by name: 'VPC Update'
 source = %Q{ VpcUpdateJob.perform_now(cron: cron) }
 job.update( source: source)
-Cron.find_or_create_by name: "#{job.name} every day at 3:00 AM", hour: 3, job: job
+cron=Cron.find_or_create_by name: "#{job.name} every day at 3:00 AM", hour: 3, job: job
+cron.update(next_execution: Time.now)
 
 
 job=Job.find_or_create_by name: 'Initialize Yearly VPC Reports with month Resolution'
@@ -61,4 +61,7 @@ Cron.find_or_create_by name: "#{job.name}, every day at 3:00 PM", hour: 15, job:
 
 GlobalSetting.set 'adjust_interval', { value: 180 }
 
-AdminUser.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password') if Rails.env.development?
+if Rails.env.development?
+  email='admin@example.com'
+  AdminUser.create!(email: email, password: 'password', password_confirmation: 'password') unless AdminUser.find_by(email: email)
+end
