@@ -6,7 +6,7 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-GlobalSetting.set 'default_timezone', { value: 'UTC' }
+GlobalSetting.set 'timezone', { value: 'UTC' }
 GlobalSetting.set 'adjust_interval', { value: 180 }
 
 Cron.delete_all

@@ -183,7 +183,7 @@ ActiveRecord::Schema.define(version: 20170929125650) do
     t.json "data"
     t.bigint "customer_id"
     t.string "check_type"
-    t.string "timezone", default: "London"
+    t.string "timezone", default: "UTC"
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

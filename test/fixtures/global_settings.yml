@@ -13,5 +13,5 @@ two:
   data: "{\"value\": 180 }"
 
 three:
-  name: default_timezone
+  name: timezone
   data: "{\"value\": \"UTC\" }"
