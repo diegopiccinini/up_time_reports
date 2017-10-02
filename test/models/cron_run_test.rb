@@ -14,8 +14,8 @@ class CronRunTest < ActiveSupport::TestCase
   end
 
   def daily_setup resolution: 'hour'
-    @date = Date.yesterday
-    to=Date.today.to_time.to_i
+    @date = GlobalSetting.date_in_default_timezone Date.yesterday
+    to=@date.next_day.to_time.to_i
     from=@date.to_time.to_i
     stubs_setup from: from, to: to, resolution: resolution
   end

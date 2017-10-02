@@ -6,6 +6,9 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
+GlobalSetting.set 'default_timezone', { value: 'UTC' }
+GlobalSetting.set 'adjust_interval', { value: 180 }
+
 Cron.delete_all
 Job.delete_all
 
@@ -59,7 +62,6 @@ job.update( source: source)
 Cron.find_or_create_by name: "#{job.name}, every day at 8:00 AM", hour: 8, job: job
 Cron.find_or_create_by name: "#{job.name}, every day at 3:00 PM", hour: 15, job: job
 
-GlobalSetting.set 'adjust_interval', { value: 180 }
 
 if Rails.env.development?
   email='admin@example.com'

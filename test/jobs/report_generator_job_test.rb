@@ -4,11 +4,12 @@ class ReportGeneratorJobTest < ActiveJob::TestCase
 
   setup do
     @now=Time.now
-    @date = Date.yesterday.at_beginning_of_month
+    @date = GlobalSetting.date_in_default_timezone Date.yesterday
+    @date= @date.at_beginning_of_month
     Report.where(start_date: @date).destroy_all
 
     stub_checks
-    to = (@date + 1).to_time
+    to = (@date + 1.day).to_time
 
     History.start "Vpc Jobs"
     Vpc.update_from_checks

@@ -1,6 +1,7 @@
 class GlobalSetting < ApplicationRecord
 
   @@adjust_interval= nil
+  @@timezone= nil
 
   def self.get name
     s=self.find_by name: name
@@ -15,5 +16,13 @@ class GlobalSetting < ApplicationRecord
 
   def self.adjust_interval
     @@adjust_interval||=GlobalSetting.get('adjust_interval')[:value]
+  end
+
+  def self.default_timezone
+    @@timezone||=GlobalSetting.get('default_timezone')[:value]
+  end
+
+  def self.date_in_default_timezone date
+    Date.parse( date.strftime("%d/%m/%Y") ).in_time_zone(self.default_timezone)
   end
 end

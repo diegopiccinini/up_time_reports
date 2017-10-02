@@ -15,14 +15,14 @@ class ReportGeneratorTest < ActiveSupport::TestCase
   end
 
   def daily_setup resolution: 'hour'
-    @date = Date.yesterday
-    to=Date.today.to_time.to_i
+    @date=GlobalSetting.date_in_default_timezone Date.yesterday
+    to=@date.next_day.to_time.to_i
     from=@date.to_time.to_i
     stubs_setup from: from, to: to, resolution: resolution
   end
 
   def weekly_setup resolution: 'day'
-    to = Date.parse('Monday')
+    to=GlobalSetting.date_in_default_timezone Date.parse('Monday')
     @date = to.prev_week
     to=to.to_time.to_i
     from=@date.to_time.to_i
@@ -30,18 +30,20 @@ class ReportGeneratorTest < ActiveSupport::TestCase
   end
 
   def monthly_setup resolution: 'day'
-    to = Date.today.at_beginning_of_month
+    to=Date.today.at_beginning_of_month
+    to=GlobalSetting.date_in_default_timezone to
+
     @date = to.prev_month
 
     if resolution=='week'
-      @date-=1 until @date.wday==1
-      to-=1 until to.wday==1
+      @date-=1.day until @date.wday==1
+      to-=1.day until to.wday==1
     end
 
-    to=to.to_time.to_i
-    from=@date.to_time.to_i
+    to=GlobalSetting.date_in_default_timezone to
+    @date=GlobalSetting.date_in_default_timezone @date
 
-    stubs_setup from: from, to: to, resolution: resolution
+    stubs_setup from: @date.to_i, to: to.to_i , resolution: resolution
   end
 
   def stubs_setup from: , to: , resolution:
@@ -114,5 +116,4 @@ class ReportGeneratorTest < ActiveSupport::TestCase
     report_generator period: 'month', resolution: 'week'
 
   end
-
 end

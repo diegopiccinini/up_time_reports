@@ -17,4 +17,8 @@ class GlobalSettingTest < ActiveSupport::TestCase
     assert GlobalSetting.adjust_interval>0
   end
 
+  test "#date_in_default_timezone" do
+    date= GlobalSetting.date_in_default_timezone(Date.today)
+    assert_equal date.zone, 'UTC'
+  end
 end

@@ -11,3 +11,7 @@ one:
 two:
   name: adjust_interval
   data: "{\"value\": 180 }"
+
+three:
+  name: default_timezone
+  data: "{\"value\": \"UTC\" }"

@@ -24,4 +24,4 @@
 /.env.test
 /config/database.yml
 /config/secrets.yml
-
+/out.txt

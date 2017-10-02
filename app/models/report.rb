@@ -37,6 +37,8 @@ class Report < ApplicationRecord
 
   def self.start date, period: 'day', resolution: 'hour'
 
+    date = GlobalSetting.date_in_default_timezone date
+
     History.write "** Starting #{period} reports on #{date}",2,2
 
     self.by_date_and_period( date, period ).destroy_all
@@ -50,7 +52,7 @@ class Report < ApplicationRecord
            if resolution=='week'
              to = date.next_month.at_end_of_month
              to-=1 until to.wday==1
-             to
+             GlobalSetting.date_in_default_timezone to
            else
              date.next_month
            end
