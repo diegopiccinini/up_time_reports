@@ -1,14 +1,13 @@
-<h1><%= report[:metadata][:title] %></h1>
+<h3><%= report[:metadata][:title] %></h3>
+
 <table>
-
-<% report[:rows].each do |row| %>
-  <tr>
-    <% row.each do |d| %>
-      <td>
-        <%= d %>
-      </td>
-    <% end %>
-  </tr>
-<% end %>
-
+  <% report[:rows].each do |row| %>
+    <tr>
+      <% row.each do |d| %>
+        <td>
+          <%= d %>
+        </td>
+      <% end %>
+    </tr>
+  <% end %>
 </table>

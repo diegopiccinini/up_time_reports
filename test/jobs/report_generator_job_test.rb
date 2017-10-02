@@ -5,7 +5,7 @@ class ReportGeneratorJobTest < ActiveJob::TestCase
   setup do
     @now=Time.now
     @date = Date.yesterday.at_beginning_of_month
-    Report.where(start_date: @date).delete_all
+    Report.where(start_date: @date).destroy_all
 
     stub_checks
     to = (@date + 1).to_time

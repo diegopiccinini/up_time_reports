@@ -18,10 +18,14 @@ class VpcReportBuilderTest < ActiveSupport::TestCase
     from =report.from
     1.upto(12) do |m|
       to = from.next_month
+      average= { 'up' => 0 , 'down' => 0 , 'unknown' => 0 }
       outage_build_data(report.vpc.id,from.to_i,to.to_i, 'day')[:summary][:states].each do |outage|
-        report.outages.create to_time( outage, [:timefrom, :timeto])
-        from=to
+        o=to_time( outage, [:timefrom, :timeto])
+        average[o[:status]]+= o[:timeto].to_i - o[:timefrom].to_i
+        report.outages.create o
       end
+      report.averages.create from: from, to: to, avgresponse: rand(1000), totalup: average['up'] , totaldown: average['down'], totalunknown: average['unknown']
+      from=to
     end
   end
 

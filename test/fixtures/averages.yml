@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  report: one
+  from: 2017-09-29 13:56:50
+  to: 2017-09-29 13:56:50
+  avgresponse: 1
+  totalup: 1
+  totaldown: 1
+  totalunknown: 1
+
+two:
+  report: two
+  from: 2017-09-29 13:56:50
+  to: 2017-09-29 13:56:50
+  avgresponse: 1
+  totalup: 1
+  totaldown: 1
+  totalunknown: 1

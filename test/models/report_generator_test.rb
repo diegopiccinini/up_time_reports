@@ -78,13 +78,14 @@ class ReportGeneratorTest < ActiveSupport::TestCase
 
     # step 4 check results
     Report.outages_saved(@date,period).each do |r|
-      assert r.uptime>0
-      assert_equal r.uptime, r.performances_uptime
-      assert_equal r.downtime, r.performances_downtime
-      assert_equal r.unmonitored, r.performances_unmonitored
+      assert r.outage_uptime>0
+      assert_equal r.outage_uptime, r.performance_uptime
+      assert_equal r.outage_downtime, r.performance_downtime
+      assert_equal r.outage_unknown, r.performance_unmonitored
     end
 
   end
+
 
   test "Report day generator" do
 

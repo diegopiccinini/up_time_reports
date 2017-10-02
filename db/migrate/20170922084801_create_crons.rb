@@ -8,8 +8,8 @@ class CreateCrons < ActiveRecord::Migration[5.1]
       t.integer :day_of_month, limit: 2
       t.integer :month, limit: 2
       t.string :status, limit: 10, default: 'ok'
-      t.datetime :last_execution
-      t.datetime :next_execution
+      t.column :last_execution ,'timestamp with time zone'
+      t.column :next_execution ,'timestamp with time zone'
       t.string :message
 
       t.timestamps

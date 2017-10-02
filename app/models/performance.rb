@@ -14,6 +14,12 @@ class Performance < ApplicationRecord
     report.outages.where(timefrom: starttime..endtime).adjusted.count
   end
 
+  def adjusted_downtime
+    report.outages.where(timefrom: starttime..endtime).adjusted.sum do |outage|
+      outage.interval / 60
+    end
+  end
+
   def endtime
     starttime + 1.send(report.resolution)
   end
@@ -27,7 +33,8 @@ class Performance < ApplicationRecord
       real_uptime_percent,
       adjusted_incidents,
       adjusted_downtime,
-      adjusted_uptime
+      adjusted_uptime,
+      avgresponse
     ]
   end
 
@@ -36,9 +43,9 @@ class Performance < ApplicationRecord
   def unit_step
     case report.resolution
     when 'week'
-      starttime.to_date.to_s
+      starttime.localtime.to_date.to_s
     else
-      starttime.send(report.resolution)
+      starttime.localtime.send(report.resolution)
     end
   end
 
@@ -52,10 +59,6 @@ class Performance < ApplicationRecord
 
   def real_uptime_percent
     percent downtime.to_f
-  end
-
-  def adjusted_downtime
-    downtime_in_minutes - (incidents - adjusted_incidents)
   end
 
   def adjusted_uptime

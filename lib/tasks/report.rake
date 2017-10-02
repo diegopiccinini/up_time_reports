@@ -49,12 +49,19 @@ namespace :report do
 
   end
 
+  desc "Execute one cron"
+  task :run_one_cron, [:id] => :environment do |t, args|
+    cron=Cron.find args.id
+    History.verbose= true
+    cron.run!
+    History.verbose= false
+  end
+
   desc "Build report"
   task :build, [:id] => :environment do |t, args|
     report=Report.find args.id
     builder=VpcReportBuilder.new report
     builder.build
   end
-
 
 end

@@ -19,10 +19,10 @@ class PerformanceTest < ActiveSupport::TestCase
     performance_total_time = @report.performances.all.sum { |x| x.uptime + x.downtime + x.unmonitored }
 
     assert_equal total_time, performance_total_time
-    assert_equal @report.uptime,      @report.performances_uptime
-    assert_equal @report.downtime,    @report.performances_downtime
-    assert_equal @report.unmonitored, @report.performances_unmonitored
-    assert @report.avgresponse>0
+    assert_equal @report.outage_uptime,      @report.performance_uptime
+    assert_equal @report.outage_downtime,    @report.performance_downtime
+    assert_equal @report.outage_unknown, @report.performance_unmonitored
+    assert @report.performance_avgresponse>0
 
   end
 

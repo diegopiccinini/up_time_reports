@@ -181,7 +181,7 @@ GEM
     paranoia (2.3.1)
       activerecord (>= 4.0, < 5.2)
     pg (0.21.0)
-    pingdom (0.1.7)
+    pingdom (0.1.8)
       activesupport (~> 5.1)
       dotenv (~> 2.2)
       faraday (~> 0.13)

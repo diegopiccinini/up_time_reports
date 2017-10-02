@@ -30,8 +30,8 @@ Cron.find_or_create_by name: "#{job.name}, every 1st of month at 5:00 AM", hour:
 job=Job.find_or_create_by name: 'Initialize Monthly VPC Reports with week Resolution'
 source = %Q{
     date=Date.today.prev_month.at_beginning_of_month
-    date-= 1 until date.wday=1 #beginning on monday
-    ReportGeneratorJob.perform_now(date, period: 'month', resolution: 'day', cron: cron)
+    date-= 1 until date.wday==1 #beginning on monday
+    ReportGeneratorJob.perform_now(date, period: 'month', resolution: 'week', cron: cron)
 }
 job.update( source: source)
 Cron.find_or_create_by name: "#{job.name}, every 2nd of month at 13:00 ", hour: 13, day_of_month: 2, job: job

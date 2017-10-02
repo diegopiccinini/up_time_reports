@@ -37,9 +37,9 @@ class OutageTest < ActiveSupport::TestCase
     assert total > 1
     assert_equal total, @report.outages.count
     assert_equal (up + down + unknown), total
-    assert_equal @report.uptime, uptime
-    assert_equal @report.downtime, downtime
-    assert_equal @report.unmonitored, unmonitored
+    assert_equal @report.outage_uptime, uptime
+    assert_equal @report.outage_downtime, downtime
+    assert_equal @report.outage_unknown, unmonitored
 
 
     total=Outage.count

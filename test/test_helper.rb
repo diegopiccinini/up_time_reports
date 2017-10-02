@@ -42,6 +42,10 @@ class ActiveSupport::TestCase
     stub_pingdom path: "/summary.outage/#{check_id}?from=#{from}&to=#{to}", body: body
   end
 
+  def stub_average(check_id:, from:, to:, resolution: 'month')
+    average_build_data(check_id,from,to,resolution)
+  end
+
   def stub_pingdom( path:, body: , status: 200)
     stub_request(:get, "https://api.pingdom.com/api/2.0#{path}").
       with(headers: {
@@ -83,6 +87,46 @@ class ActiveSupport::TestCase
 
   def outage_data check_id,from, to, resolution='hour'
     GlobalSetting.get to_key('outage_data',check_id,from,to,resolution)
+  end
+
+  def average_build_data check_id,from,to,resolution='month'
+
+    unless average_data(check_id,from,to,resolution)
+      starting_at=Time.at(from).in_time_zone('UTC')
+
+      1.upto(12) do
+        m=starting_at.to_i
+        end_at=starting_at.next_month.at_beginning_of_month
+        next_month=end_at.to_i
+
+        responsetime={ from: m, to: next_month, avgresponse: rand(1000)}
+        status= { totalup: 0, totaldown: 0, totalunknown: 0 }
+
+        stub_outage(check_id: check_id, from: m, to: next_month, resolution: resolution)
+
+        data=outage_data(check_id,m,next_month,resolution)[:summary][:states]
+
+        # outages inside peridod
+        inside_filter = data.select { |x| x[:timefrom] < next_month and x[:timeto]>m }
+        inside_filter.each do |state|
+          interval = [state[:timeto],next_month].min - [state[:timefrom],m].max
+          status[ ('total' + state[:status]).to_sym ]+=interval
+        end
+
+        json_data = { summary: { responsetime: responsetime, status: status }  }.to_json
+
+        GlobalSetting.create name: to_key('average_data',check_id,m,next_month,resolution), data: json_data
+
+        stub_pingdom path: "/summary.average/#{check_id}?from=#{m}&to=#{next_month}&includeuptime=true", body: json_data
+
+        starting_at = end_at
+
+      end
+    end
+  end
+
+  def average_data check_id,from,to,resolution='month'
+    GlobalSetting.get to_key('average_data',check_id,from,to,resolution)
   end
 
   def performance_json check_id,from,to,resolution='hour'

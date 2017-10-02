@@ -1,7 +1,7 @@
 class CreatePerformances < ActiveRecord::Migration[5.1]
   def change
     create_table :performances do |t|
-      t.datetime :starttime
+      t.column :starttime,'timestamp with time zone'
       t.integer :avgresponse
       t.integer :uptime
       t.integer :downtime

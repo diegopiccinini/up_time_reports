@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170928112650) do
+ActiveRecord::Schema.define(version: 20170929125650) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,19 @@ ActiveRecord::Schema.define(version: 20170928112650) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admin_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
+  end
+
+  create_table "averages", force: :cascade do |t|
+    t.bigint "report_id"
+    t.datetime "from"
+    t.datetime "to"
+    t.integer "avgresponse"
+    t.integer "totalup"
+    t.integer "totaldown"
+    t.integer "totalunknown"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["report_id"], name: "index_averages_on_report_id"
   end
 
   create_table "crons", force: :cascade do |t|
@@ -132,6 +145,11 @@ ActiveRecord::Schema.define(version: 20170928112650) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "uptime"
+    t.integer "downtime"
+    t.integer "unknown"
+    t.integer "adjusted_downtime"
+    t.integer "avg_response"
     t.index ["deleted_at"], name: "index_reports_on_deleted_at"
     t.index ["start_date"], name: "index_reports_on_start_date"
     t.index ["vpc_id"], name: "index_reports_on_vpc_id"
@@ -165,6 +183,7 @@ ActiveRecord::Schema.define(version: 20170928112650) do
     t.json "data"
     t.bigint "customer_id"
     t.string "check_type"
+    t.string "timezone", default: "London"
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -172,6 +191,7 @@ ActiveRecord::Schema.define(version: 20170928112650) do
     t.index ["deleted_at"], name: "index_vpcs_on_deleted_at"
   end
 
+  add_foreign_key "averages", "reports"
   add_foreign_key "crons", "jobs"
   add_foreign_key "outages", "reports"
   add_foreign_key "performances", "reports"
