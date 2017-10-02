@@ -11,7 +11,7 @@ class CreateVpcs < ActiveRecord::Migration[5.1]
       t.json :data
       t.belongs_to :customer, foreign_key: true
       t.string :check_type
-      t.string :timezone, default: 'London'
+      t.string :timezone, default: 'UTC'
       t.column :deleted_at,'timestamp with time zone'
       t.timestamps
     end
