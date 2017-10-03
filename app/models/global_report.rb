@@ -60,30 +60,24 @@ class GlobalReport < ApplicationRecord
     end
   end
 
-  def self.save_performances
+  def save_performances
     History.write "** Saving performances",2,2
-    where(status: 'start').each do |global_report|
-      step global_report: global_report, filter_scope: :started, update_method: :update_performances, status: 'performances saved'
-    end
+    step filter_scope: :started, update_method: :update_performances, status: 'performances saved'
   end
 
-  def self.save_outages
+  def save_outages
     History.write "** Saving outages",2,2
-    where(status: 'performances saved').each do |global_report|
-      step global_report: global_report, filter_scope: :performances_saved, update_method: :update_outages, status: 'outages saved'
-    end
+    step filter_scope: :performances_saved, update_method: :update_outages, status: 'outages saved'
   end
 
-  def self.save_year_outages
+  def save_year_outages
     History.write "** Saving outages",2,2
-    where(status: 'performances saved', period: 'year' ).each do |global_report|
-      step global_report: global_report, filter_scope: :started, update_method: :update_year_outages, status: 'outages saved'
-    end
+    step filter_scope: :started, update_method: :update_year_outages, status: 'outages saved'
   end
 
-  def self.step global_report:, filter_scope:,  update_method: , status:
+  def step filter_scope:,  update_method: , status:
 
-    global_report.reports.send(filter_scope).each do |report|
+    reports.send(filter_scope).each do |report|
       begin
         History.write "\t#{update_method} on #{report.vpc.name}"
         report.send(update_method)
@@ -95,7 +89,7 @@ class GlobalReport < ApplicationRecord
       report.save
     end
 
-    global_report.update( status: status )
+    update( status: status )
 
   end
 

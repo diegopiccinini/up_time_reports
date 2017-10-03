@@ -65,7 +65,7 @@ class ReportGeneratorTest < ActiveSupport::TestCase
     assert_equal global_report.reports.started.count, Vpc.count
 
     # step 2 save_performances
-    GlobalReport.save_performances
+    global_report.save_performances
     updated =  global_report.reports.performances_saved_total.count
     ok =  global_report.reports.performances_saved.count
     with_error = updated - ok
@@ -75,7 +75,7 @@ class ReportGeneratorTest < ActiveSupport::TestCase
     assert_equal updated, Vpc.count
 
     # step 3 save_outages
-    GlobalReport.save_outages
+    global_report.save_outages
     assert_equal global_report.reports.outages_saved.count, ok
 
     # step 4 check results

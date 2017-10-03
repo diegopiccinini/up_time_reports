@@ -12,8 +12,6 @@ class Report < ApplicationRecord
   has_many :averages, :dependent => :delete_all
 
   scope :by_period, -> (period='day') { includes(:global_report).where( period: period ) }
-  scope :by_date, -> (date) { includes(:global_report).where( start_date: date ) }
-  scope :daily, -> (date) { by_period.by_date(date) }
 
   scope :started, -> { where( status: 'start') }
   scope :performances_saved, -> { where( status: 'performances saved' ) }

@@ -73,7 +73,7 @@ class History < ApplicationRecord
     puts text if self.verbose
   end
 
-  def self.execution
+  def self.execution cron: nil
     begin
 
       yield
@@ -82,6 +82,7 @@ class History < ApplicationRecord
 
     rescue => e
       cron_status='error'
+
       cron.update(message: e.message) if cron
       History.write "Error: #{e.message}", level: cron_status
     end

@@ -2,7 +2,7 @@ class ReportGeneratorJob < ApplicationJob
   include SuckerPunch::Job
   queue_as :default
 
-  def perform(date, period: 'day', resolution: 'hour', cron: nil)
+  def perform(date:, period: 'day', resolution: 'hour', cron: nil)
 
     history= History.free
 
@@ -12,15 +12,15 @@ class ReportGeneratorJob < ApplicationJob
 
         History.start "Starting #{self.class.name} on #{date}, #{period} period and #{resolution} resolution", cron: cron
 
-        history= History.execution do
+        history= History.execution(cron: cron) do
 
-          Report.start date , period: period, resolution: resolution
+          global_report=GlobalReport.start date: date , period: period, resolution: resolution
 
           if resolution=='month'
-            Report.save_year_outages date
+            global_report.save_year_outages
           else
-            Report.save_performances date, period
-            Report.save_outages date, period
+            global_report.save_performances
+            global_report.save_outages
           end
 
         end

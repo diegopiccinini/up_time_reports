@@ -6,7 +6,6 @@ class ReportGeneratorJobTest < ActiveJob::TestCase
     @now=Time.now
     @date = GlobalSetting.date_in_default_timezone Date.yesterday
     @date= @date.at_beginning_of_month
-    Report.where(start_date: @date).destroy_all
 
     stub_checks
     to = (@date + 1.day).to_time
@@ -26,22 +25,26 @@ class ReportGeneratorJobTest < ActiveJob::TestCase
       stub_performance_error check_id: vpc_id, from: @date.to_time.to_i, to: to.to_i, resolution: 'hour'
     end
     History.reset
-    @history=ReportGeneratorJob.perform_now(@date,cron: crons(:one))
+    @history=ReportGeneratorJob.perform_now(date: @date,cron: crons(:one))
   end
 
   teardown do
-    Report.daily( @date).destroy_all
+    GlobalReport.where(start_date: @date).each do |gr|
+      gr.reports.destroy_all
+      gr.destroy
+    end
   end
 
   test "reports outage was saved" do
 
-    assert_equal Report.where(start_date: @date).count, Vpc.count
+    global_report= GlobalReport.find_by start_date: @date
+    assert_equal global_report.reports.count, Vpc.count
 
     # fixture errors saved
-    assert_equal Report.performances_saved_total(@date).count, @fixture_vpcs.count
+    assert_equal global_report.reports.performances_saved_total.count, @fixture_vpcs.count
     # outage saved
     outage_saved= Vpc.count - @fixture_vpcs.count
-    assert_equal Report.outages_saved(@date).count, outage_saved
+    assert_equal global_report.reports.outages_saved.count, outage_saved
   end
 
   test "history tracker" do
