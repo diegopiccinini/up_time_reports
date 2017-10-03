@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  resolution: day
+  period: month
+  start_date: 2017-10-03
+  status: started
+  from:
+  to:
+  data:
+
+two:
+  resolution: hour
+  period: day
+  start_date: 2017-10-03
+  status: started
+  from:
+  to:
+  data:

@@ -1,0 +1,2 @@
+class GlobalReport < ApplicationRecord
+end

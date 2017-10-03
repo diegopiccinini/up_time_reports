@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170929125650) do
+ActiveRecord::Schema.define(version: 20171003085037) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -81,6 +81,19 @@ ActiveRecord::Schema.define(version: 20170929125650) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["deleted_at"], name: "index_customers_on_deleted_at"
+  end
+
+  create_table "global_reports", force: :cascade do |t|
+    t.string "resolution", null: false
+    t.string "period", null: false
+    t.date "start_date", null: false
+    t.string "status", null: false
+    t.datetime "from"
+    t.datetime "to"
+    t.json "data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["start_date", "period", "resolution"], name: "index_global_reports_on_start_date_and_period_and_resolution", unique: true
   end
 
   create_table "global_settings", force: :cascade do |t|
