@@ -21,6 +21,7 @@ class Vpc < ApplicationRecord
 
       vpc.name             = check.name
       vpc.hostname         = check.hostname
+      vpc.created          = check.created
       vpc.lasterrortime    = check.lasterrortime
       vpc.lastresponsetime = check.lastresponsetime
       vpc.lasttesttime     = check.lasttesttime

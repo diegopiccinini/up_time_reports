@@ -2,6 +2,7 @@
 
 one:
   hostname: fixture1.com
+  created: 2017-09-14 15:53:22
   lasterrortime: 2017-09-14 15:53:22
   lastresponsetime: 1
   lasttesttime: 2017-09-14 15:53:22
@@ -15,6 +16,7 @@ one:
 
 two:
   hostname: fixture2.com
+  created: 2017-09-14 15:53:22
   lasterrortime: 2017-09-14 15:53:22
   lastresponsetime: 1
   lasttesttime: 2017-09-14 15:53:22
@@ -28,6 +30,7 @@ two:
 
 three:
   hostname: fixture3.com
+  created: 2017-09-14 15:53:22
   lasterrortime: 2017-09-14 15:53:22
   lastresponsetime: 1
   lasttesttime: 2017-09-14 15:53:22

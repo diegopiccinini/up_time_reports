@@ -174,6 +174,7 @@ ActiveRecord::Schema.define(version: 20170929125650) do
 
   create_table "vpcs", force: :cascade do |t|
     t.string "hostname"
+    t.datetime "created"
     t.datetime "lasterrortime"
     t.integer "lastresponsetime"
     t.datetime "lasttesttime"

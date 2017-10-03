@@ -28,7 +28,7 @@ class VpcReportBuilder
   end
 
   def build
-    header = [[resolution.capitalize,'Outages', 'Downtime', 'Uptime', 'real uptime', 'Adjusted Outages', 'Adjusted Downtime', 'Adjusted Uptime', 'AVG Response']]
+    header = [[resolution.capitalize,'Outages', 'Downtime','Unknown','Uptime','Real Uptime', 'Adjusted Outages', 'Adjusted Downtime', 'Adjusted Uptime', 'AVG Response']]
     data[:rows]= header + rows
     report.status = 'JSON ready'
     report.data = data.to_json
@@ -56,31 +56,37 @@ class VpcReportBuilder
       to=from.next_month
 
       interval= to.to_i - from.to_i
+      total_uptime=report.outages.up(from,to).sum { |o| o.interval }
 
       outages= report.outages.down(from,to).count
       downtime=report.outages.down(from,to).sum do |outage|
         outage.interval / 60
       end
 
+      unknown=report.outages.unknown(from,to).sum do |outage|
+        outage.interval / 60
+      end
+
       real_downtime=report.outages.down(from,to).sum { |outage| outage.interval }
-      uptime=percent (downtime * 60) , interval
+      uptime= format("%.3f",total_uptime * 100.0 / interval)
       real_uptime=percent real_downtime, interval
       adjusted_outages= report.outages.down(from,to).adjusted.count
 
       adjusted_downtime= report.outages.down(from,to).adjusted.sum do |outage|
         outage.interval / 60
       end
+
       adjust_uptime = percent (adjusted_downtime * 60), interval
       avgresponse=report.averages.by_period(from,to).sum { |a| a.avgresponse }
 
       from=to
-      [m, outages, downtime, uptime, real_uptime, adjusted_outages, adjusted_downtime, adjust_uptime, avgresponse]
+      [m, outages, downtime, unknown, uptime, real_uptime, adjusted_outages, adjusted_downtime, adjust_uptime, avgresponse]
     end
   end
 
   def percent partial_time , under
     n = (under.to_f - partial_time.to_f) * 100.0 / under.to_f
-    format("%.3f %", n )
+    format("%.3f", n )
   end
 
   def adjust_interval

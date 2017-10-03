@@ -2,6 +2,7 @@ class CreateVpcs < ActiveRecord::Migration[5.1]
   def change
     create_table :vpcs do |t|
       t.string :hostname
+      t.column :created ,'timestamp with time zone'
       t.column :lasterrortime ,'timestamp with time zone'
       t.integer :lastresponsetime
       t.column :lasttesttime,'timestamp with time zone'

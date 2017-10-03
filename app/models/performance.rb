@@ -29,6 +29,7 @@ class Performance < ApplicationRecord
       unit_step,
       incidents,
       downtime_in_minutes,
+      unmonitored_in_minutes,
       uptime_percent ,
       real_uptime_percent,
       adjusted_incidents,
@@ -47,6 +48,10 @@ class Performance < ApplicationRecord
     else
       starttime.localtime.send(report.resolution)
     end
+  end
+
+  def unmonitored_in_minutes
+    unmonitored / 60
   end
 
   def downtime_in_minutes
@@ -71,7 +76,7 @@ class Performance < ApplicationRecord
 
   def percent n
     n = (1.send(report.resolution).to_f - n.to_f) * 100.0 / 1.send(report.resolution).to_f
-    format("%.3f %", n )
+    format("%.3f", n )
   end
 
 end
