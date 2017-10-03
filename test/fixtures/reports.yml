@@ -48,7 +48,7 @@ month_weekly:
 %>
 
 year_monthly:
-  global_report: year_weekly
+  global_report: year_monthly
   status: outages saved
   data:
   vpc: two
