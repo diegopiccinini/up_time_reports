@@ -6,13 +6,6 @@ class ReportValidationsTest < ActiveSupport::TestCase
     @report = Report.new
   end
 
-  test "#valid_periods" do
-    assert_not Report::PERIODS.empty?
-  end
-
-  test "#valid_resolutions" do
-    assert_not Report::RESOLUTIONS.empty?
-  end
 
   test "should has a vpc" do
 
@@ -25,59 +18,22 @@ class ReportValidationsTest < ActiveSupport::TestCase
 
   end
 
-  test "should validate precense_of status, start_date" do
+  test "should has a global_report" do
 
     assert_not @report.valid?
-    assert @report.errors.keys.include?(:status)
-    assert @report.errors.keys.include?(:start_date)
+    assert @report.errors.keys.include?(:global_report)
 
-    @report.status = 'start'
+    @report.global_report= global_reports(:one)
     @report.valid?
-    assert_not @report.errors.keys.include?(:status)
-    @report.start_date = 1.day.ago
-    @report.valid?
-    assert_not @report.errors.keys.include?(:start_date)
-  end
-
-  test "should has a valid period" do
-
-    assert_not @report.valid?
-    assert @report.errors.keys.include?(:period)
-
-    @report.period = '2 years'
-    assert_not @report.valid?
-    assert @report.errors.keys.include?(:period)
-    Report::PERIODS.each do |period|
-      @report.period = period
-      @report.valid?
-      assert_not @report.errors.keys.include?(:period)
-    end
+    assert_not @report.errors.keys.include?(:global_report)
 
   end
 
-  test "should has a valid resolution" do
-
-    assert_not @report.valid?
-    assert @report.errors.keys.include?(:resolution)
-
-    @report.resolution = 'year'
-    assert_not @report.valid?
-    assert @report.errors.keys.include?(:resolution)
-
-    Report::RESOLUTIONS.each do |resolution|
-      @report.resolution = resolution
-      @report.valid?
-      assert_not @report.errors.keys.include?(:resolution)
-    end
-
-  end
 
   test "should be valid" do
     @report.vpc = vpcs(:one)
+    @report.global_report = global_reports(:one)
     @report.status = 'start'
-    @report.start_date = 1.day.ago
-    @report.period = 'day'
-    @report.resolution = 'hour'
     assert @report.valid?
   end
 

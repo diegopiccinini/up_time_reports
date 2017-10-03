@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171003085037) do
+ActiveRecord::Schema.define(version: 20171003090252) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -88,12 +88,14 @@ ActiveRecord::Schema.define(version: 20171003085037) do
     t.string "period", null: false
     t.date "start_date", null: false
     t.string "status", null: false
-    t.datetime "from"
-    t.datetime "to"
+    t.datetime "from", null: false
+    t.datetime "to", null: false
     t.json "data"
+    t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["start_date", "period", "resolution"], name: "index_global_reports_on_start_date_and_period_and_resolution", unique: true
+    t.index ["deleted_at"], name: "index_global_reports_on_deleted_at"
+    t.index ["start_date", "period", "resolution", "deleted_at"], name: "unique_global_report_index", unique: true
   end
 
   create_table "global_settings", force: :cascade do |t|
@@ -147,12 +149,7 @@ ActiveRecord::Schema.define(version: 20171003085037) do
   end
 
   create_table "reports", force: :cascade do |t|
-    t.string "resolution"
-    t.string "period"
-    t.date "start_date"
     t.string "status"
-    t.datetime "from"
-    t.datetime "to"
     t.json "data"
     t.bigint "vpc_id"
     t.datetime "deleted_at"
@@ -163,8 +160,9 @@ ActiveRecord::Schema.define(version: 20171003085037) do
     t.integer "unknown"
     t.integer "adjusted_downtime"
     t.integer "avg_response"
+    t.bigint "global_report_id"
     t.index ["deleted_at"], name: "index_reports_on_deleted_at"
-    t.index ["start_date"], name: "index_reports_on_start_date"
+    t.index ["global_report_id"], name: "index_reports_on_global_report_id"
     t.index ["vpc_id"], name: "index_reports_on_vpc_id"
   end
 
@@ -209,6 +207,7 @@ ActiveRecord::Schema.define(version: 20171003085037) do
   add_foreign_key "crons", "jobs"
   add_foreign_key "outages", "reports"
   add_foreign_key "performances", "reports"
+  add_foreign_key "reports", "global_reports"
   add_foreign_key "reports", "vpcs"
   add_foreign_key "vpcs", "customers"
 end

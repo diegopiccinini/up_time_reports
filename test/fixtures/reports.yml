@@ -1,45 +1,29 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  resolution: hour
-  period: day
-  start_date: <%= Date.yesterday %>
+  global_report: one
   status: outages saved
-  from: <%= Date.yesterday.to_time %>
-  to: <%= Date.today.to_time %>
   data:
   vpc: one
 
 <% date = Date.parse('Monday').prev_week %>
 two:
-  resolution: day
-  period: week
-  start_date: <%= date %>
+  global_report: two
   status: outages saved
-  from: <%= date.to_time %>
-  to: <%= date.next_week.to_time %>
   data:
   vpc: two
 
 three:
-  resolution: hour
-  period: day
-  start_date: 2017-09-20
+  global_report: three
   status: outages saved
-  from: 2017-09-20 00:00:00
-  to: 2017-09-21 00:00:00
   data:
   vpc: three
 
 
 <% date = Date.today.prev_month.at_beginning_of_month %>
 month_daily:
-  resolution: day
-  period: month
-  start_date: <%= date %>
+  global_report: month_daily
   status: outages saved
-  from: <%= date.to_time %>
-  to: <%= date.next_month.to_time %>
   data:
   vpc: two
 
@@ -52,12 +36,8 @@ month_daily:
 %>
 
 month_weekly:
-  resolution: week
-  period: month
-  start_date: <%= date %>
+  global_report: month_weekly
   status: outages saved
-  from: <%= from.to_time %>
-  to: <%= to.to_time %>
   data:
   vpc: two
 
@@ -68,12 +48,8 @@ month_weekly:
 %>
 
 year_monthly:
-  resolution: month
-  period: year
-  start_date: <%= date %>
+  global_report: year_weekly
   status: outages saved
-  from: <%= from.to_time %>
-  to: <%= to.to_time %>
   data:
   vpc: two
 

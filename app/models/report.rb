@@ -3,31 +3,23 @@ class Report < ApplicationRecord
   acts_as_paranoid
 
   belongs_to :vpc
+  belongs_to :global_report
 
-  validates :status,:start_date, presence: true
-  validate :validate_period
-  validate :validate_resolution
+  validates :status, presence: true
+
   has_many :performances, :dependent => :delete_all
   has_many :outages, :dependent => :delete_all
   has_many :averages, :dependent => :delete_all
 
-  PERIODS = %w(day week month year)
-  RESOLUTIONS =  %w(hour day week month)
-
-  scope :by_period, -> (period='day') { where( period: period ) }
-  scope :by_date, -> (date) { where( start_date: date ) }
-  scope :by_date_and_period, -> (date,period) { where( start_date: date, period: period ) }
+  scope :by_period, -> (period='day') { includes(:global_report).where( period: period ) }
+  scope :by_date, -> (date) { includes(:global_report).where( start_date: date ) }
   scope :daily, -> (date) { by_period.by_date(date) }
 
-  scope :started, -> (date, period='day') { by_date_and_period(date,period).where( status: 'start') }
-  scope :performances_saved, -> (date, period='day') do
-    by_date_and_period(date,period).where( status: 'performances saved' )
-  end
-  scope :performances_saved_total, -> (date, period='day') do
-    by_date_and_period(date,period).where( "status LIKE ?", 'performances saved%' )
-  end
-  scope :outages_saved, -> (date, period='day') { by_date_and_period(date,period).where( status: 'outages saved' ) }
-  scope :outages_saved_total, -> (date, period='day') { by_date_and_period(date,period).where( "status LIKE ?", 'outages saved%' ) }
+  scope :started, -> { where( status: 'start') }
+  scope :performances_saved, -> { where( status: 'performances saved' ) }
+  scope :performances_saved_total, -> { where( "status LIKE ?", 'performances saved%' ) }
+  scope :outages_saved, -> { where( status: 'outages saved' ) }
+  scope :outages_saved_total, -> { where( "status LIKE ?", 'outages saved%' ) }
   scope :json_ready, -> { where( status: 'JSON ready') }
 
 
@@ -35,72 +27,12 @@ class Report < ApplicationRecord
     Pingdom::ServerTime.time
   end
 
-  def self.start date, period: 'day', resolution: 'hour'
-
-    date = GlobalSetting.date_in_default_timezone date
-
-    History.write "** Starting #{period} reports on #{date}",2,2
-
-    self.by_date_and_period( date, period ).destroy_all
-
-    to = case period
-         when 'day'
-           date.next_day
-         when 'week'
-           date.next_week
-         when 'month'
-           if resolution=='week'
-             to = date.next_month.at_end_of_month
-             to-=1 until to.wday==1
-             GlobalSetting.date_in_default_timezone to
-           else
-             date.next_month
-           end
-         when 'year'
-           date.next_year
-         end
+  def self.start global_report
 
     Vpc.all.each do |vpc|
-      self.create( vpc: vpc,
-                  period: period,
-                  start_date: date,
-                  resolution: resolution,
-                  status: 'start' ,
-                  from: date.to_time,
-                  to: to.to_time
-                 )
-
+      self.create vpc: vpc, global_report: global_report ,status: 'start'
     end
 
-  end
-
-  def self.save_performances date, period='day'
-    History.write "** Saving performances",2,2
-    step filter_scope: :started, update_method: :update_performances, status: 'performances saved', date: date, period: period
-  end
-
-  def self.save_outages date, period='day'
-    History.write "** Saving outages",2,2
-    step filter_scope: :performances_saved, update_method: :update_outages, status: 'outages saved', date: date, period: period
-  end
-
-  def self.save_year_outages date
-    History.write "** Saving outages",2,2
-    step filter_scope: :started, update_method: :update_year_outages, status: 'outages saved', date: date, period: 'year'
-  end
-
-  def self.step filter_scope:, update_method: , status: , date:, period:
-    self.send(filter_scope,date,period).each do |report|
-      begin
-        History.write "\t#{update_method} on #{report.vpc.name}"
-        report.send(update_method)
-        report.status = status
-      rescue
-        History.write "\t#{update_method} error on #{report.vpc.name}", level: 'error'
-        report.status = status + ' error'
-      end
-      report.save
-    end
   end
 
   def update_performances
@@ -207,15 +139,24 @@ class Report < ApplicationRecord
     JSON.parse data, symbolize_names: true
   end
 
-
-  private
-
-  def validate_period
-    validate_inclusion :period, PERIODS
+  def start_date
+    global_report.start_date
   end
 
-  def validate_resolution
-    validate_inclusion :resolution, RESOLUTIONS
+  def period
+    global_report.period
+  end
+
+  def resolution
+    global_report.resolution
+  end
+
+  def from
+    global_report.from
+  end
+
+  def to
+    global_report.to
   end
 
 end

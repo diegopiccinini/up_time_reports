@@ -1,19 +1,72 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  resolution: day
-  period: month
-  start_date: 2017-10-03
-  status: started
-  from:
-  to:
-  data:
-
-two:
   resolution: hour
   period: day
-  start_date: 2017-10-03
-  status: started
-  from:
-  to:
+  start_date: <%= Date.yesterday %>
+  status: outages saved
+  from: <%= Date.yesterday.to_time %>
+  to: <%= Date.today.to_time %>
   data:
+
+<% date = Date.parse('Monday').prev_week %>
+two:
+  resolution: day
+  period: week
+  start_date: <%= date %>
+  status: outages saved
+  from: <%= date.to_time %>
+  to: <%= date.next_week.to_time %>
+  data:
+
+three:
+  resolution: hour
+  period: day
+  start_date: 2017-09-20
+  status: outages saved
+  from: 2017-09-20 00:00:00
+  to: 2017-09-21 00:00:00
+  data:
+
+<% date = Date.today.prev_month.at_beginning_of_month %>
+month_daily:
+  resolution: day
+  period: month
+  start_date: <%= date %>
+  status: outages saved
+  from: <%= date.to_time %>
+  to: <%= date.next_month.to_time %>
+  data:
+
+<%
+   date= Date.today
+   from = date.prev_month.at_beginning_of_month
+   from-=1 until from.wday == 1
+   to = date.at_beginning_of_month
+   to-=1 until to.wday == 1
+%>
+
+month_weekly:
+  resolution: week
+  period: month
+  start_date: <%= date %>
+  status: outages saved
+  from: <%= from.to_time %>
+  to: <%= to.to_time %>
+  data:
+
+<%
+   date = Date.today.prev_year.at_beginning_of_year
+   from = date
+   to = from.next_year
+%>
+
+year_monthly:
+  resolution: month
+  period: year
+  start_date: <%= date %>
+  status: outages saved
+  from: <%= from.to_time %>
+  to: <%= to.to_time %>
+  data:
+

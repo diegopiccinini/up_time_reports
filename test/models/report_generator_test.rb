@@ -60,14 +60,14 @@ class ReportGeneratorTest < ActiveSupport::TestCase
   def report_generator period:, resolution:
 
     # step 1 report start
-    Report.start @date, period: period, resolution: resolution
-    assert Report.started(@date,period).count > 0
-    assert_equal Report.started(@date,period).count, Vpc.count
+    global_report=GlobalReport.start date: @date, period: period, resolution: resolution
+    assert global_report.reports.started.count > 0
+    assert_equal global_report.reports.started.count, Vpc.count
 
     # step 2 save_performances
-    Report.save_performances @date, period
-    updated =  Report.performances_saved_total(@date,period).count
-    ok =  Report.performances_saved(@date,period).count
+    GlobalReport.save_performances
+    updated =  global_report.reports.performances_saved_total.count
+    ok =  global_report.reports.performances_saved.count
     with_error = updated - ok
     assert ok > 0
     assert ok < Performance.count
@@ -75,11 +75,11 @@ class ReportGeneratorTest < ActiveSupport::TestCase
     assert_equal updated, Vpc.count
 
     # step 3 save_outages
-    Report.save_outages @date, period
-    assert_equal Report.outages_saved(@date,period).count, ok
+    GlobalReport.save_outages
+    assert_equal global_report.reports.outages_saved.count, ok
 
     # step 4 check results
-    Report.outages_saved(@date,period).each do |r|
+    global_report.reports.outages_saved.each do |r|
       assert r.outage_uptime>0
       assert_equal r.outage_uptime, r.performance_uptime
       assert_equal r.outage_downtime, r.performance_downtime
