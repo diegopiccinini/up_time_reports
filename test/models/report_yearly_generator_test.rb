@@ -30,17 +30,17 @@ class ReportYearlyGeneratorTest < ActiveSupport::TestCase
     resolution = 'month'
 
     # step 1 report start
-    Report.start @date, period: period, resolution: resolution
-    assert Report.started(@date,period).count > 0
-    assert_equal Report.started(@date,period).count, Vpc.count
+    global_report=GlobalReport.start date: @date, period: period, resolution: resolution
+    assert global_report.reports.started.count > 0
+    assert_equal global_report.reports.started.count, Vpc.count
 
 
     # step 2 save year outages
-    Report.save_year_outages @date
-    assert Report.outages_saved(@date,period).count> 0
+    global_report.save_year_outages
+    assert global_report.reports.outages_saved.count> 0
 
     # step 4 check results
-    Report.outages_saved(@date,period).each do |r|
+    global_report.reports.outages_saved.each do |r|
       assert r.outage_uptime>0
       assert_equal r.outage_uptime, r.average_uptime
       assert_equal r.outage_downtime, r.average_downtime
