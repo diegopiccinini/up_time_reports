@@ -70,18 +70,20 @@ class VpcReportBuilderTest < ActiveSupport::TestCase
 
   test "#build" do
     @three.build
-    assert_equal @three.data[:rows].count, 25
+    assert_equal @three.data[:rows].count, 24
+    assert_kind_of Array, @three.data[:totals]
+
     @two.build
-    assert_equal @two.data[:rows].count, 8
+    assert_equal @two.data[:rows].count, 7
 
     @month_daily.build
-    assert_equal @month_daily.data[:rows].count, Date.today.prev_month.at_end_of_month.day + 1
+    assert_equal @month_daily.data[:rows].count, Date.today.prev_month.at_end_of_month.day
 
     @month_weekly.build
     assert @month_weekly.data[:rows].count, 4
 
     @year_monthly.build
-    assert @year_monthly.data[:rows].count, 13
+    assert @year_monthly.data[:rows].count, 12
 
     assert_equal Report.json_ready.count, 5
 

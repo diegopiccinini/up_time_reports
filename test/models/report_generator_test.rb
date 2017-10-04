@@ -61,8 +61,9 @@ class ReportGeneratorTest < ActiveSupport::TestCase
 
     # step 1 report start
     global_report=GlobalReport.start date: @date, period: period, resolution: resolution
+    vpc_included =Vpc.created_before(global_report.from).count
     assert global_report.reports.started.count > 0
-    assert_equal global_report.reports.started.count, Vpc.count
+    assert_equal global_report.reports.started.count, vpc_included
 
     # step 2 save_performances
     global_report.save_performances
@@ -72,7 +73,7 @@ class ReportGeneratorTest < ActiveSupport::TestCase
     assert ok > 0
     assert ok < Performance.count
     assert with_error, @fixture_vpcs.count
-    assert_equal updated, Vpc.count
+    assert_equal updated, vpc_included
 
     # step 3 save_outages
     global_report.save_outages

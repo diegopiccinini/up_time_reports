@@ -2,6 +2,8 @@ class Vpc < ApplicationRecord
   acts_as_paranoid
   belongs_to :customer
 
+  scope :created_before, -> (from) { where('created <= ?',from) }
+
   def self.checks
     Pingdom::Check.params={}
     Pingdom::Check.all

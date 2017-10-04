@@ -3,6 +3,7 @@
     {
       "hostname": "example.com",
       "id": 85975,
+      "created": 1297446423,
       "lasterrortime": 1297446423,
       "lastresponsetime": 355,
       "lasttesttime": 1300977363,
@@ -21,6 +22,7 @@
     {
       "hostname": "mydomain.com",
       "id": 161748,
+      "created": 1297446423,
       "lasterrortime": 1299194968,
       "lastresponsetime": 1141,
       "lasttesttime": 1300977268,
@@ -39,6 +41,7 @@
     {
       "hostname": "example.net",
       "id": 208655,
+      "created": 1297446423,
       "lasterrortime": 1300527997,
       "lastresponsetime": 800,
       "lasttesttime": 1300977337,

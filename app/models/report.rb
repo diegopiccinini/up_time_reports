@@ -27,7 +27,7 @@ class Report < ApplicationRecord
 
   def self.start global_report
 
-    Vpc.all.each do |vpc|
+    Vpc.created_before(global_report.from).all.each do |vpc|
       self.create vpc: vpc, global_report: global_report ,status: 'start'
     end
 
