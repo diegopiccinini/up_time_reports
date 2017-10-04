@@ -6,7 +6,6 @@ one:
   data:
   vpc: one
 
-<% date = Date.parse('Monday').prev_week %>
 two:
   global_report: two
   status: outages saved
@@ -20,32 +19,18 @@ three:
   vpc: three
 
 
-<% date = Date.today.prev_month.at_beginning_of_month %>
 month_daily:
   global_report: month_daily
   status: outages saved
   data:
   vpc: two
 
-<%
-   date= Date.today
-   from = date.prev_month.at_beginning_of_month
-   from-=1 until from.wday == 1
-   to = date.at_beginning_of_month
-   to-=1 until to.wday == 1
-%>
 
 month_weekly:
   global_report: month_weekly
   status: outages saved
   data:
   vpc: two
-
-<%
-   date = Date.today.prev_year.at_beginning_of_year
-   from = date
-   to = from.next_year
-%>
 
 year_monthly:
   global_report: year_monthly

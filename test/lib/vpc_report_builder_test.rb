@@ -68,25 +68,55 @@ class VpcReportBuilderTest < ActiveSupport::TestCase
     assert_kind_of Array, @three.data[:rows]
   end
 
-  test "#build" do
-    @three.build
-    assert_equal @three.data[:rows].count, 24
-    assert_kind_of Array, @three.data[:totals]
+  def totals_asserts builder
 
-    @two.build
-    assert_equal @two.data[:rows].count, 7
+    totals = builder.data[:totals]
+    assert_kind_of Array, totals
+    assert totals[builder.index('Uptime')]>0
+    assert_equal totals[builder.index('Uptime')], builder.report.outage_uptime
+    assert totals[builder.index('Downtime')]>0
+    assert_equal totals[builder.index('Downtime')], builder.report.outage_downtime
+    assert totals[builder.index('Unknown')]>0
+    assert_equal totals[builder.index('Unknown')], builder.report.outage_unknown
+    assert_equal totals[builder.index('Outages')], builder.report.incidents
+    assert_equal totals[builder.index('Adjusted Outages')], builder.report.adjusted_incidents
 
-    @month_daily.build
-    assert_equal @month_daily.data[:rows].count, Date.today.prev_month.at_end_of_month.day
+    assert totals[builder.index('Uptime %')].to_f < 100.0
+    assert totals[builder.index('Uptime %')].to_f > 40.0
+    assert totals[builder.index('Adjusted Uptime %')].to_f >=  totals[builder.index('Uptime %')].to_f
+    assert totals[builder.index('Adjusted Outages')] <=  totals[builder.index('Outages')]
 
-    @month_weekly.build
-    assert @month_weekly.data[:rows].count, 4
+  end
 
-    @year_monthly.build
-    assert @year_monthly.data[:rows].count, 12
+  def build_asserts builder, total
+    builder.build
+    assert_equal builder.data[:rows].count, total
+    totals_asserts builder
+  end
 
+  test "#build three report" do
+    build_asserts @three, 24
+  end
+
+  test "#build two report" do
+    build_asserts @two, 7
+  end
+
+  test "#build month_daily report" do
+    build_asserts @month_daily, Date.today.prev_month.at_end_of_month.day
+  end
+
+  test "#build month_weekly report" do
+    build_asserts @month_weekly, 4
+  end
+
+  test "#build year_montly report" do
+    build_asserts @year_monthly, 12
+  end
+
+  test "#build json ready" do
+    [@three,@two,@month_daily,@month_weekly,@year_monthly].each { |x| x.build }
     assert_equal Report.json_ready.count, 5
-
   end
 
   test "#outages_by_month" do

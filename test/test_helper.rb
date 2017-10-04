@@ -73,7 +73,8 @@ class ActiveSupport::TestCase
       collection = []
       timefrom=from
       loop do
-        timeto=timefrom + (status=='up' ? rand(6 * 1.send(resolution).to_i) : rand(1000))
+        factor = resolution=='hour' ? 6 : 1
+        timeto=timefrom + (status=='up' ? rand(factor * 1.send(resolution).to_i) : rand(1000))
         timeto=to if timeto>=to
         collection << { status: status, timefrom: timefrom, timeto: timeto }
         break if timeto==to

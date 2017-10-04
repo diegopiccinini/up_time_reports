@@ -113,6 +113,14 @@ class Report < ApplicationRecord
     outages.adjusted.all.sum { |x| x.interval }
   end
 
+  def incidents
+    outages.where(status: 'down').count
+  end
+
+  def adjusted_incidents
+    outages.adjusted.count
+  end
+
   def performance_uptime
     performances.sum(:uptime)
   end

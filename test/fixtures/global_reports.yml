@@ -39,7 +39,7 @@ month_daily:
   data:
 
 <%
-   date= Date.today
+   date= Date.today.in_time_zone(GlobalSetting.timezone)
    from = date.prev_month.at_beginning_of_month
    from-=1 until from.wday == 1
    to = date.at_beginning_of_month
