@@ -17,14 +17,15 @@ class GlobalReport < ApplicationRecord
   scope :daily, -> (date) { by_period.by_date(date) }
 
   scope :started, -> (date, period='day') { by_date_and_period(date,period).where( status: 'start') }
-  scope :outages_saved, -> (date, period='day') { by_date_and_period(date,period).where( status: 'outages saved' ) }
+  scope :outages_saved, -> { where( status: 'outages saved' ) }
+  scope :vpc_reports_built, -> { where( status: 'vpc reports built' ) }
   scope :json_ready, -> { where( status: 'JSON ready') }
 
   def self.start date: , period: 'day', resolution: 'hour'
 
     date = GlobalSetting.date_in_default_timezone date
 
-    History.write "** Starting #{period} reports on #{date}",2,2
+    History.write "** Starting #{period} reports on #{date} with resolution #{resolution}",2,2
 
     where( start_date: date, period: period, resolution: resolution ).each do |gr|
       gr.reports.destroy_all
@@ -61,22 +62,25 @@ class GlobalReport < ApplicationRecord
   end
 
   def save_performances
-    History.write "** Saving performances",2,2
+    History.write "** Saving performances #{period} reports on #{start_date} with resolution #{resolution}",2,2
     step filter_scope: :started, update_method: :update_performances, status: 'performances saved'
   end
 
   def save_outages
-    History.write "** Saving outages",2,2
+    History.write "** Saving outages #{period} reports on #{start_date} with resolution #{resolution}",2,2
     step filter_scope: :performances_saved, update_method: :update_outages, status: 'outages saved'
   end
 
   def vpc_reports_build
-    History.write "** Building VPC reports",2,2
+    History.write "** Building VPC #{period} reports on #{start_date} with resolution #{resolution}",2,2
+    reports.outages_saved.each do |r|
+      r.destroy if r.outages.count == 0
+    end
     step filter_scope: :outages_saved, update_method: :build, status: 'vpc reports built'
   end
 
   def save_year_outages
-    History.write "** Saving outages",2,2
+    History.write "** Saving outages #{period} reports on #{start_date} with resolution #{resolution}",2,2
     step filter_scope: :started, update_method: :update_year_outages, status: 'outages saved'
   end
 
@@ -96,6 +100,16 @@ class GlobalReport < ApplicationRecord
 
     update( status: status )
 
+  end
+
+  def build
+    History.write "** Building Global #{period} report on #{start_date} with resolution #{resolution}",2,2
+    builder = GlobalReportBuilder.new self
+    builder.build
+  end
+
+  def data_hash
+    JSON.parse data, symbolize_names: true
   end
 
   private

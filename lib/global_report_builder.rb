@@ -47,7 +47,14 @@ class GlobalReportBuilder
         [r.vpc.name, r.vpc.hostname] + data_row
       end
     end
-    global_rows
+    global_rows.sort do |x,y|
+      if resolution =='hour'
+        format("%02d",x[2]) + x[0].to_s + x[1].to_s <=> format("%02d",y[2]) + y[0].to_s + y[1].to_s
+      else
+        x[2].to_s + x[0].to_s + x[1].to_s <=> y[2].to_s + y[0].to_s + y[1].to_s
+      end
+
+    end
   end
 
   def totalize data_rows
@@ -72,7 +79,7 @@ class GlobalReportBuilder
     avg_response = data_rows.sum { |r| r[index('AVG Response')] * r[index('Uptime')] }
     avg_response = uptime>0 ? avg_response / uptime : 0
 
-    [data_rows.count,'-' ,'-',outages, downtime, unknown, uptime, uptime_percentage,adj_outages, adj_downtime, adj_uptime, adj_uptime_percentage, avg_response ]
+    ["rows: #{data_rows.count}",'-' ,'-',outages, downtime, unknown, uptime, uptime_percentage,adj_outages, adj_downtime, adj_uptime, adj_uptime_percentage, avg_response ]
   end
 
   def index field

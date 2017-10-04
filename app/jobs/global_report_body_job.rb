@@ -1,4 +1,4 @@
-class ReportBodyJob < ApplicationJob
+class GlobalReportBodyJob < ApplicationJob
   include SuckerPunch::Job
   queue_as :default
 
@@ -13,8 +13,8 @@ class ReportBodyJob < ApplicationJob
 
         history= History.execution do
 
-          GlobalReport.outages_saved.each do |global_report|
-            global_report.vpc_reports_build
+          GlobalReport.vpc_reports_built.each do |global_report|
+            global_report.build
           end
 
         end

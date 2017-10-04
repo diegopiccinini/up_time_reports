@@ -62,6 +62,10 @@ job.update( source: source)
 Cron.find_or_create_by name: "#{job.name}, every day at 8:00 AM", hour: 8, job: job
 Cron.find_or_create_by name: "#{job.name}, every day at 3:00 PM", hour: 15, job: job
 
+job=Job.find_or_create_by name: 'Build Global Reports Body'
+source = %Q{ GlobalReportBodyJob.perform_now(cron: cron) }
+job.update( source: source)
+Cron.find_or_create_by name: "#{job.name}, every day at 10:00 AM", hour: 10, job: job
 
 if Rails.env.development?
   email='admin@example.com'
