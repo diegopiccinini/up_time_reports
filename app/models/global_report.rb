@@ -70,6 +70,11 @@ class GlobalReport < ApplicationRecord
     step filter_scope: :performances_saved, update_method: :update_outages, status: 'outages saved'
   end
 
+  def vpc_reports_build
+    History.write "** Building VPC reports",2,2
+    step filter_scope: :outages_saved, update_method: :build, status: 'vpc reports built'
+  end
+
   def save_year_outages
     History.write "** Saving outages",2,2
     step filter_scope: :started, update_method: :update_year_outages, status: 'outages saved'
@@ -81,7 +86,7 @@ class GlobalReport < ApplicationRecord
       begin
         History.write "\t#{update_method} on #{report.vpc.name}"
         report.send(update_method)
-        report.status = status
+        report.status = status unless update_method==:build
       rescue
         History.write "\t#{update_method} error on #{report.vpc.name}", level: 'error'
         report.status = status + ' error'

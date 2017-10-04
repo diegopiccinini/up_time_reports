@@ -85,6 +85,11 @@ class Report < ApplicationRecord
     end
   end
 
+  def build
+    builder = VpcReportBuilder.new self
+    builder.build
+  end
+
   def outage_uptime
     outages.up(from,to).all.sum { |x| x.interval }
   end

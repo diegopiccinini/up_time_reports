@@ -103,15 +103,6 @@ class VpcReportBuilder
 
   end
 
-  def percent partial_time , under
-    n = (under.to_f - partial_time.to_f) * 100.0 / under.to_f
-    format("%.3f", n )
-  end
-
-  def adjust_interval
-    GlobalSetting.adjust_interval
-  end
-
   def row_by_outages resolution_unit, from, to
 
     outages= report.outages.down(from,to).count
@@ -170,7 +161,7 @@ class VpcReportBuilder
 
     uptime_percentage= monitored>0 ? (uptime * 100.0 / monitored ) : 0.0
 
-    uptime_percentage=format("%3.f", uptime_percentage)
+    uptime_percentage= percentage_format uptime_percentage
 
     adjusted_outages= performance.adjusted_incidents
 
@@ -182,7 +173,7 @@ class VpcReportBuilder
 
     adjusted_uptime_percentage= adjusted_monitored>0 ? (adjusted_uptime * 100.0 / adjusted_monitored ) : 0.0
 
-    adjusted_uptime_percentage=format("%3.f", adjusted_uptime_percentage)
+    adjusted_uptime_percentage= percentage_format adjusted_uptime_percentage
 
     avgresponse=performance.avgresponse
 
