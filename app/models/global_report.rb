@@ -23,7 +23,7 @@ class GlobalReport < ApplicationRecord
 
   def self.start date: , period: 'day', resolution: 'hour'
 
-    date = GlobalSetting.date_in_default_timezone date
+    date = GlobalSetting.date_in_default_timezone date if period!= 'month'
 
     History.write "** Starting #{period} reports on #{date} with resolution #{resolution}",2,2
 
@@ -54,10 +54,14 @@ class GlobalReport < ApplicationRecord
         to-=1 until to.wday==1
         GlobalSetting.date_in_default_timezone to
       else
-        date.next_month
+        date.next_month - 1.day
       end
     when 'year'
-      date.next_year
+      if date.year == Date.today.year
+        Date.today.in_time_zone(GlobalSetting.timezone).prev_month.at_end_of_month
+      else
+        date.next_year
+      end
     end
   end
 
@@ -110,6 +114,10 @@ class GlobalReport < ApplicationRecord
 
   def data_hash
     JSON.parse data, symbolize_names: true
+  end
+
+  def name
+    "#{period.capitalize} Report by #{resolution.capitalize} Resolution, on #{start_date.to_s}"
   end
 
   private

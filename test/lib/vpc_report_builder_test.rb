@@ -55,8 +55,8 @@ class VpcReportBuilderTest < ActiveSupport::TestCase
     report=reports(:three)
     assert @three.spreadsheet_name.include?(report.vpc.name)
     assert @three.spreadsheet_name.include?(report.vpc.hostname)
-    assert @three.spreadsheet_name.include?(report.period)
-    assert @three.spreadsheet_name.include?(report.resolution)
+    assert @three.spreadsheet_name.include?(report.period.capitalize)
+    assert @three.spreadsheet_name.include?(report.resolution.capitalize)
     assert @three.spreadsheet_name.include?(report.start_date.to_s)
   end
 

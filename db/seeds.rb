@@ -25,7 +25,10 @@ Cron.find_or_create_by name: "#{job.name}, every Monday at 6:00 AM", hour: 6, da
 
 
 job=Job.find_or_create_by name: 'Initialize Monthly VPC Reports with day Resolution'
-source = %Q{ ReportGeneratorJob.perform_now( date: Date.today.prev_month.at_beginning_of_month, period: 'month', resolution: 'day', cron: cron) }
+source = %Q{
+  date=Date.today.in_time_zone(GlobalSetting.timezone).prev_month.at_beginning_of_month
+  ReportGeneratorJob.perform_now( date: date, period: 'month', resolution: 'day', cron: cron)
+}
 job.update( source: source)
 Cron.find_or_create_by name: "#{job.name}, every 1st of month at 5:00 AM", hour: 5, day_of_month: 1, job: job
 
@@ -55,6 +58,15 @@ source = %Q{
 job.update( source: source)
 Cron.find_or_create_by name: "#{job.name}, every 2nd of Junuary at 3:00 AM", hour: 3, day_of_month: 2, month: 1, job: job
 
+
+job=Job.find_or_create_by name: 'Initialize Current Year VPC Reports with month Resolution'
+source = %Q{
+    date=Date.today.at_beginning_of_year
+    ReportGeneratorJob.perform_now( date: date, period: 'year', resolution: 'month', cron: cron)
+}
+
+job.update( source: source)
+Cron.find_or_create_by name: "#{job.name}, every month at 16:00 AM", hour: 16, day_of_month: 4, job: job
 
 job=Job.find_or_create_by name: 'Build VPC Reports JSON Body'
 source = %Q{ ReportBodyJob.perform_now(cron: cron) }

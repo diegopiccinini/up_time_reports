@@ -26,8 +26,10 @@ class Performance < ApplicationRecord
 
   def unit_step
     case report.resolution
+    when 'day'
+      starttime.in_time_zone('London').to_date.day
     when 'week'
-      starttime.in_time_zone(GlobalSetting.timezone).to_date.to_s
+      starttime.in_time_zone('London').to_date.to_s
     else
       starttime.in_time_zone(GlobalSetting.timezone).send(report.resolution)
     end

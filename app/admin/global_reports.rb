@@ -1,18 +1,25 @@
 ActiveAdmin.register GlobalReport do
-# See permitted parameters documentation:
-# https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
-#
-# permit_params :list, :of, :attributes, :on, :model
-#
-# or
-#
-# permit_params do
-#   permitted = [:permitted, :attributes]
-#   permitted << :other if params[:action] == 'create' && current_user.admin?
-#   permitted
-# end
-
+  permit_params :status
+  form title: 'Global Report edit' do |f|
+    inputs 'Details' do
+      input :status
+    end
+    actions
+  end
+  index do
+    selectable_column
+    column :name
+    column :period
+    column :resolution
+    column :start_date
+    column :status
+    actions
+  end
   show do
-    render 'data', { report: global_report.data_hash }
+    if global_report.status =='JSON ready'
+      render 'data', { report: global_report.data_hash }
+    else
+      render 'not_ready'
+    end
   end
 end

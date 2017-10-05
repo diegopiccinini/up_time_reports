@@ -1,9 +1,7 @@
-
-<table>
-  <caption><%= report[:metadata][:title] %></caption>
+<table class="report-table">
   <thead>
     <tr>
-      <% report[:header].each do |h| %>
+      <% report[:header][1..-1].each do |h| %>
         <th>
           <%= h %>
         </th>
@@ -11,11 +9,12 @@
     </tr>
   </thead>
   <tbody>
-  <% report[:rows].each do |row| %>
+  <% report[:formatted_rows].each do |row| %>
     <tr>
-      <% row.each do |d| %>
-        <td>
-          <%= d %>
+      <td><%= link_to row[1][:value], admin_report_path(row[0][:value]) %></td>
+      <% row[2..-1].each do |d| %>
+        <td class="<%= d[:style] %>" >
+          <%= d[:formatted] %>
         </td>
       <% end %>
     </tr>
@@ -23,9 +22,9 @@
   </tbody>
   <tfoot>
     <tr>
-      <% report[:totals].each do |h| %>
-        <th>
-          <%= h %>
+      <% report[:formatted_totals].each do |h| %>
+        <th class="<%= h[:style] %>" >
+          <%= h[:formatted] %>
         </th>
       <% end %>
     </tr>

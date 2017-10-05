@@ -27,7 +27,7 @@ class Report < ApplicationRecord
 
   def self.start global_report
 
-    Vpc.created_before(global_report.from).all.each do |vpc|
+    Vpc.created_before(global_report.to).all.each do |vpc|
       self.create vpc: vpc, global_report: global_report ,status: 'start'
     end
 
@@ -168,6 +168,10 @@ class Report < ApplicationRecord
 
   def to
     global_report.to
+  end
+
+  def name
+    "#{vpc.name} (#{vpc.hostname}) #{global_report.name}"
   end
 
 end
