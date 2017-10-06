@@ -31,16 +31,18 @@ class VpcReportBuilder < ReportBuilder
   def outages_by_month
 
     from=report.from
-    1.upto(report.to.month).map do |m|
+    r=1.upto(12).map do |m|
       to=from.next_month
       if report.outages.by_period(from,to).count> 0
         row = row_by_outages(m,from,to)
       else
-        row = [m] + ['-'] * (cols - 1)
+        row = false
       end
       from=to
       row
     end
+
+    r.select { |x| x }
 
   end
 

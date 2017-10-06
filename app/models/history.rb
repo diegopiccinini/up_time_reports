@@ -82,9 +82,9 @@ class History < ApplicationRecord
 
     rescue => e
       cron_status='error'
-
-      cron.update(message: e.message) if cron
-      History.write "Error: #{e.message}", level: cron_status
+      message="Error: #{e.message}\n\nBacktrace: #{e.backtrace.join("\n")}"
+      cron.update(message: message) if cron
+      History.write message, level: cron_status
     end
 
     History.finish cron_status: cron_status

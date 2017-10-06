@@ -79,6 +79,14 @@ source = %Q{ GlobalReportBodyJob.perform_now(cron: cron) }
 job.update( source: source)
 Cron.find_or_create_by name: "#{job.name}, every day at 10:00 AM", hour: 10, job: job
 
+job=Job.find_or_create_by name: 'Rebuild Reports'
+source = %Q{
+  ReportBodyJob.perform_now(cron: cron)
+  GlobalReportBodyJob.perform_now(cron: cron)
+}
+job.update( source: source)
+Cron.find_or_create_by name: "#{job.name}, disabled", hour: 0, enabled: false, job: job
+
 if Rails.env.development?
   email='admin@example.com'
   AdminUser.create!(email: email, password: 'password', password_confirmation: 'password') unless AdminUser.find_by(email: email)

@@ -95,8 +95,11 @@ class GlobalReport < ApplicationRecord
         History.write "\t#{update_method} on #{report.vpc.name}"
         report.send(update_method)
         report.status = status unless update_method==:build
-      rescue
-        History.write "\t#{update_method} error on #{report.vpc.name}", level: 'error'
+      rescue => e
+        message ="\n#{update_method} error on #{report.vpc.name}"
+        message<< "\nError: #{e.message}"
+        message<< "\n\nTrace: #{e.backtrace.join("\n")}"
+        History.write message, level: 'error'
         report.status = status + ' error'
       end
       report.save

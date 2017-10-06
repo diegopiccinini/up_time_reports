@@ -51,7 +51,11 @@ class ReportBuilder
 
   def format_row r
     r.map.with_index do |value, i|
-      { value: value, formatted: format_column(i,value), style: style_column(i,value) }
+      if value=='-'
+        {value: value, formatted: value, style: '' }
+      else
+        { value: value, formatted: format_column(i,value), style: style_column(i,value) }
+      end
     end
   end
 

@@ -12,7 +12,6 @@ ActiveAdmin.register Report do
     column :vpc
     column :status
     column :global_report
-    column :status
     actions
   end
 

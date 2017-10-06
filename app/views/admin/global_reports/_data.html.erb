@@ -1,7 +1,7 @@
 <table class="report-table">
   <thead>
     <tr>
-      <% report[:header][1..-1].each do |h| %>
+      <% report[:header].each do |h| %>
         <th>
           <%= h %>
         </th>
@@ -11,8 +11,7 @@
   <tbody>
   <% report[:formatted_rows].each do |row| %>
     <tr>
-      <td><%= link_to row[1][:value], admin_report_path(row[0][:value]) %></td>
-      <% row[2..-1].each do |d| %>
+      <% row.each do |d| %>
         <td class="<%= d[:style] %>" >
           <%= d[:formatted] %>
         </td>

@@ -66,4 +66,18 @@ namespace :report do
     builder.build
   end
 
+  desc "Rebuild Global Report"
+  task :rebuild, [:id] => :environment do |t, args|
+    global_report=GlobalReport.find args.id
+
+    global_report.update( status: 'outages saved')
+    global_report.reports.each { |r| r.update( status: 'outages saved' ) }
+    job = Job.find_by name: 'Rebuild Reports'
+    cron= Cron.find_by job: job
+    History.verbose= true
+    cron.run!
+    History.verbose= false
+
+  end
+
 end
