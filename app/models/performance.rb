@@ -15,8 +15,12 @@ class Performance < ApplicationRecord
   end
 
   def adjusted_downtime
-    report.outages.where(timefrom: starttime..endtime).adjusted.sum do |outage|
-      outage.interval
+    if report.resolution=='hour'
+      downtime<GlobalSetting.adjust_interval ? 0 : downtime
+    else
+      report.outages.where(timefrom: starttime..endtime).adjusted.sum do |o|
+        o.interval
+      end
     end
   end
 

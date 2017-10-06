@@ -30,10 +30,9 @@ class ReportGeneratorTest < ActiveSupport::TestCase
   end
 
   def monthly_setup resolution: 'day'
-    to=Date.today.at_beginning_of_month
-    to=GlobalSetting.date_in_default_timezone to
+    to=Date.today.prev_month.at_end_of_month
 
-    @date = to.prev_month
+    @date = to.at_beginning_of_month
 
     if resolution=='week'
       @date-=1.day until @date.wday==1
@@ -61,7 +60,7 @@ class ReportGeneratorTest < ActiveSupport::TestCase
 
     # step 1 report start
     global_report=GlobalReport.start date: @date, period: period, resolution: resolution
-    vpc_included =Vpc.created_before(global_report.from).count
+    vpc_included =Vpc.created_before(global_report.to).count
     assert global_report.reports.started.count > 0
     assert_equal global_report.reports.started.count, vpc_included
 

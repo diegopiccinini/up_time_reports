@@ -96,7 +96,7 @@ class ActiveSupport::TestCase
   def average_build_data check_id,from,to,resolution='month'
 
     unless average_data(check_id,from,to,resolution)
-      starting_at=Time.at(from).in_time_zone('UTC')
+      starting_at=Time.at(from).in_time_zone('London')
 
       1.upto(12) do
         m=starting_at.to_i

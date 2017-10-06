@@ -32,10 +32,8 @@ class GlobalReportBuilderTest < ActiveSupport::TestCase
   end
 
   def monthly_setup resolution: 'day'
-    to=Date.today.at_beginning_of_month
-    to=GlobalSetting.date_in_default_timezone to
-
-    @date = to.prev_month
+    to=Date.today.prev_month.at_end_of_month
+    @date = to.at_beginning_of_month
 
     if resolution=='week'
       @date-=1.day until @date.wday==1
@@ -94,7 +92,7 @@ class GlobalReportBuilderTest < ActiveSupport::TestCase
   test "Report month generator day resolution" do
 
     monthly_setup resolution: 'day'
-    builder_asserts Date.today.prev_month.at_end_of_month.day
+    builder_asserts @date.at_end_of_month.day
 
   end
 
