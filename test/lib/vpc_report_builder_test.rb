@@ -2,19 +2,28 @@ require 'test_helper'
 
 class VpcReportBuilderTest < ActiveSupport::TestCase
 
+  def total_asserts builder, rows
+    build_asserts builder, rows
+    global=GlobalReportBuilder.new builder.report.global_report
+    global.build
+    assert_equal global.data[:rows].count, rows
+  end
+
+
   test "#build two report" do
-    report=by_report :two
-    build_asserts report, 7
+    builder=by_report :two
+    total_asserts builder, 7
   end
 
   test "#build month_daily report" do
-    report=by_report :month_daily
-    build_asserts report, Date.today.prev_month.at_end_of_month.day
+    builder=by_report :month_daily
+    rows=Date.today.prev_month.at_end_of_month.day
+    total_asserts builder, rows
   end
 
   test "#build month_weekly report" do
-    report=by_report :month_weekly
-    build_asserts report, 4
+    builder=by_report :month_weekly
+    total_asserts builder, 4
   end
 
   test "#build year_monthly report" do
@@ -24,7 +33,7 @@ class VpcReportBuilderTest < ActiveSupport::TestCase
     builder=VpcReportBuilder.new(report)
     builder.build
 
-    build_asserts builder, 12
+    total_asserts builder, 12
   end
 
 
