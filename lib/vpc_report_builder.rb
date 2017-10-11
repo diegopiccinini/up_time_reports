@@ -58,7 +58,7 @@ class VpcReportBuilder < ReportBuilder
 
     unknown=report.outages.unknown(from,to).sum { |o| o.interval }
 
-    uptime_percentage= monitored>0 ? (uptime * 100.0 / monitored ) : 0.0
+    uptime_percentage= ratio uptime, monitored
 
     adjusted_outages= report.outages.down(from,to).adjusted.count
 
@@ -68,7 +68,7 @@ class VpcReportBuilder < ReportBuilder
 
     adjusted_monitored = adjusted_uptime + adjusted_downtime
 
-    adjusted_uptime_percentage= adjusted_monitored>0 ? (adjusted_uptime * 100.0 / adjusted_monitored ) : 0.0
+    adjusted_uptime_percentage= ratio adjusted_uptime , adjusted_monitored
 
     avgresponse=report.averages.by_period(from,to).sum { |a| a.avgresponse }
 
@@ -77,7 +77,7 @@ class VpcReportBuilder < ReportBuilder
   end
 
   def performance_rows
-    report.performances.order(:starttime).map { |p| row_by_performance p }
+    report.performances.where("starttime <= ?",report.to).order(:starttime).map { |p| row_by_performance p }
   end
 
   def row_by_performance performance
@@ -94,7 +94,7 @@ class VpcReportBuilder < ReportBuilder
 
     unknown = performance.unmonitored
 
-    uptime_percentage= monitored>0 ? (uptime * 100.0 / monitored ) : 0.0
+    uptime_percentage= ratio uptime, monitored
 
     adjusted_outages= performance.adjusted_incidents
 
@@ -104,7 +104,7 @@ class VpcReportBuilder < ReportBuilder
 
     adjusted_monitored = adjusted_uptime + adjusted_downtime
 
-    adjusted_uptime_percentage= adjusted_monitored>0 ? (adjusted_uptime * 100.0 / adjusted_monitored ) : 0.0
+    adjusted_uptime_percentage= ratio adjusted_uptime, adjusted_monitored
 
     avgresponse=performance.avgresponse
 

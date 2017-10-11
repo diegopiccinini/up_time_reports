@@ -9,14 +9,14 @@ one:
   to: <%= Date.today.to_time %>
   data:
 
-<% date = Date.parse('Monday').prev_week %>
+<% date = Date.parse('Monday').in_time_zone('UTC').prev_week %>
 two:
   resolution: day
   period: week
   start_date: <%= date %>
   status: outages saved
-  from: <%= date.to_time %>
-  to: <%= date.next_week.to_time %>
+  from: <%= date %>
+  to: <%= date.next_week - 1.day %>
   data:
 
 three:
@@ -35,24 +35,17 @@ month_daily:
   start_date: <%= date %>
   status: outages saved
   from: <%= date.to_time %>
-  to: <%= date.next_month.to_time %>
+  to: <%= date.next_month.to_time - 1.day %>
   data:
 
-<%
-   date= Date.today.in_time_zone('UTC')
-   from = date.prev_month.at_beginning_of_month
-   from-=1 until from.wday == 1
-   to = date.at_beginning_of_month
-   to-=1 until to.wday == 1
-%>
 
 month_weekly:
   resolution: week
   period: month
-  start_date: <%= date %>
+  start_date: 2017-08-28
   status: outages saved
-  from: <%= from.to_time %>
-  to: <%= to.to_time %>
+  from: 2017-08-28 00:00:00
+  to: 2017-09-24 00:00:00
   data:
 
 <%

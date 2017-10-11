@@ -75,12 +75,14 @@ class ActiveSupport::TestCase
       status='up'
       collection = []
       timefrom=from
+      end_to=to
+      end_to+= 1.day.to_i if %w(week).include?resolution
       loop do
         factor = resolution=='hour' ? 6 : 1
         timeto=timefrom + (status=='up' ? rand(factor * 1.send(resolution).to_i) : rand(1000))
-        timeto=to if timeto>=to
+        timeto=end_to if timeto>=end_to
         collection << { status: status, timefrom: timefrom, timeto: timeto }
-        break if timeto==to
+        break if timeto==end_to
         timefrom=timeto
         status = (%w(up down unknown) - [status]).shuffle.first
       end
@@ -96,7 +98,7 @@ class ActiveSupport::TestCase
   def average_build_data check_id,from,to,resolution='month'
 
     unless average_data(check_id,from,to,resolution)
-      starting_at=Time.at(from).in_time_zone('London')
+      starting_at=Time.at(from).in_time_zone('UTC')
 
       1.upto(12) do
         m=starting_at.to_i
@@ -147,7 +149,10 @@ class ActiveSupport::TestCase
       units = {}
       time_period = 1.send(resolution).to_i
 
-      from.step(to - time_period,time_period) do |x|
+      end_steps = to
+      end_steps+=time_period if %w(week).include?resolution
+
+      from.step(end_steps,time_period) do |x|
         units[x]={ starttime: x, avgresponse: rand(1000), uptime: 0, downtime: 0, unmonitored: 0 }
       end
 
@@ -166,9 +171,12 @@ class ActiveSupport::TestCase
       end
       units.values.each do |h|
         total_time =h[:uptime] + h[:downtime] + h[:unmonitored]
-        raise "total time #{total_time} is wrong in #{h[:strattime]}" unless total_time==time_period
+
+        if total_time>0 and total_time!=time_period and h[:starttime]<to
+          raise "total time #{total_time} is wrong in #{h.to_s} time period #{time_period}"
+        end
+
       end
-      check_generated(data, units)
       json_data = { summary: { resolution.pluralize.to_sym => units.values }}.to_json
       GlobalSetting.create name: to_key('performance_data',check_id,from,to,resolution), data: json_data
     end
@@ -186,6 +194,73 @@ class ActiveSupport::TestCase
       $stdout = original_stdout
     end
     fake.string
+  end
+
+  def build_report_data report
+    from =report.from.to_i
+    to = report.to.to_i
+    resolution= report.resolution
+    outage_build_data(report.vpc.id,from,to,resolution)[:summary][:states].each do |outage|
+      report.outages.create to_time( outage, [:timefrom, :timeto])
+    end
+    performance_build_data(report.vpc.id, from,to,resolution)[:summary][resolution.pluralize.to_sym].each do |performance|
+      report.performances.create to_time(performance, [:starttime])
+    end
+  end
+
+  def build_year_report_data report
+    from =report.from
+    1.upto(12) do |m|
+      to = from.next_month
+      average= { 'up' => 0 , 'down' => 0 , 'unknown' => 0 }
+      outage_build_data(report.vpc.id,from.to_i,to.to_i, report.resolution)[:summary][:states].each do |outage|
+        o=to_time( outage, [:timefrom, :timeto])
+        average[o[:status]]+= o[:timeto].to_i - o[:timefrom].to_i
+        report.outages.create o
+      end
+      report.averages.create from: from, to: to, avgresponse: rand(1000), totalup: average['up'] , totaldown: average['down'], totalunknown: average['unknown']
+      from=to
+    end
+  end
+
+  def to_time hash, keys
+    hash.each_pair do |key, value|
+      hash[key]= Time.at(value) if keys.include?key
+    end
+    hash
+  end
+
+  def by_report key
+    build_report_data reports(key)
+    VpcReportBuilder.new(reports(key))
+  end
+
+  def totals_asserts builder
+
+    totals = builder.data[:totals]
+    assert_kind_of Array, totals
+    assert totals[builder.index('Uptime')]>0
+    if builder.resolution!='week'
+      assert_equal totals[builder.index('Uptime')], builder.report.outage_uptime
+      assert totals[builder.index('Downtime')]>0
+      assert_equal totals[builder.index('Downtime')], builder.report.outage_downtime
+      assert totals[builder.index('Unknown')]>0
+      assert_equal totals[builder.index('Unknown')], builder.report.outage_unknown
+      assert_equal totals[builder.index('Outages')], builder.report.incidents
+      assert_equal totals[builder.index('Adjusted Outages')], builder.report.adjusted_incidents
+    end
+
+    assert totals[builder.index('Uptime %')].to_f < 1.0
+    assert totals[builder.index('Uptime %')].to_f > 0.4
+    assert totals[builder.index('Adjusted Uptime %')].to_f >=  totals[builder.index('Uptime %')].to_f
+    assert totals[builder.index('Adjusted Outages')] <=  totals[builder.index('Outages')]
+
+  end
+
+  def build_asserts builder, total
+    builder.build
+    assert_equal total, builder.data[:rows].count
+    totals_asserts builder
   end
 
   private

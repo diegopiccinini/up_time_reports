@@ -24,36 +24,37 @@ class ReportGeneratorTest < ActiveSupport::TestCase
   def weekly_setup resolution: 'day'
     to=GlobalSetting.date_in_default_timezone Date.parse('Monday')
     @date = to.prev_week
-    to=to.to_time.to_i
+    to=to.to_time.to_i - 1.day.to_i
     from=@date.to_time.to_i
     stubs_setup from: from, to: to, resolution: resolution
   end
 
   def monthly_setup resolution: 'day'
     to=Date.today.prev_month.at_end_of_month
+    to=GlobalSetting.date_in_default_timezone to
 
     @date = to.at_beginning_of_month
 
     if resolution=='week'
       @date-=1.day until @date.wday==1
-      to-=1.day until to.wday==1
+      to-=1.day until to.wday==0
     end
 
-    to=GlobalSetting.date_in_default_timezone to
     @date=GlobalSetting.date_in_default_timezone @date
 
     stubs_setup from: @date.to_i, to: to.to_i , resolution: resolution
+
   end
 
   def stubs_setup from: , to: , resolution:
     Vpc.checks.each do |check|
-      stub_performance check_id: check.id, from: from, to: to, resolution: resolution
-      stub_outage check_id: check.id, from: from, to: from
-    end
+    stub_performance check_id: check.id, from: from, to: to, resolution: resolution
+    stub_outage check_id: check.id, from: from, to: from, resolution: resolution
+  end
 
-    @fixture_vpcs.each do |vpc_id|
-      stub_performance_error check_id: vpc_id, from: from, to: to, resolution: resolution
-    end
+  @fixture_vpcs.each do |vpc_id|
+    stub_performance_error check_id: vpc_id, from: from, to: to, resolution: resolution
+  end
   end
 
   def report_generator period:, resolution:
@@ -81,9 +82,11 @@ class ReportGeneratorTest < ActiveSupport::TestCase
     # step 4 check results
     global_report.reports.outages_saved.each do |r|
       assert r.outage_uptime>0
-      assert_equal r.outage_uptime, r.performance_uptime
-      assert_equal r.outage_downtime, r.performance_downtime
-      assert_equal r.outage_unknown, r.performance_unmonitored
+      if resolution!='week'
+        assert_equal r.outage_uptime, r.performance_uptime
+        assert_equal r.outage_downtime, r.performance_downtime
+        assert_equal r.outage_unknown, r.performance_unmonitored
+      end
     end
 
   end

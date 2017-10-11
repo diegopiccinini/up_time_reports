@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class GlobalReportBuilderTest < ActiveSupport::TestCase
-
+=begin
   setup do
     History.start 'ReportJob'
     stub_checks
@@ -32,18 +32,20 @@ class GlobalReportBuilderTest < ActiveSupport::TestCase
   end
 
   def monthly_setup resolution: 'day'
-    to=Date.today.prev_month.at_end_of_month
-    @date = to.at_beginning_of_month
+    from=1504224000
+    to=1506729600
+    @date=Time.at(from).in_time_zone('UTC').to_date
 
     if resolution=='week'
-      @date-=1.day until @date.wday==1
-      to-=1.day until to.wday==1
+      from=1503878400
+      @date=Time.at(from).in_time_zone('UTC').to_date
+      to=1507420800
     end
 
-    to=GlobalSetting.date_in_default_timezone to
     @date=GlobalSetting.date_in_default_timezone @date
 
-    stubs_setup from: @date.to_i, to: to.to_i , resolution: resolution
+    stubs_setup from: from, to: to , resolution: resolution
+
     report_generator period: 'month', resolution: resolution
   end
 
@@ -102,4 +104,5 @@ class GlobalReportBuilderTest < ActiveSupport::TestCase
     builder_asserts 4
 
   end
+=end
 end

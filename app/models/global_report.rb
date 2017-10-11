@@ -47,11 +47,11 @@ class GlobalReport < ApplicationRecord
     when 'day'
       date.next_day
     when 'week'
-      date.next_week
+      date.next_week - 1.day
     when 'month'
       if resolution=='week'
         to = date.next_month.at_end_of_month
-        to-=1 until to.wday==1
+        to-=1 until to.wday==0
         GlobalSetting.date_in_default_timezone to
       else
         date.next_month - 1.day

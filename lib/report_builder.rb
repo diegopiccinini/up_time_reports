@@ -42,6 +42,10 @@ class ReportBuilder
     header.size
   end
 
+  def ratio numerator, denominator
+    denominator>0 ? numerator.to_f / denominator.to_f : 0.0
+  end
+
 
   def format_rows data_rows
     data_rows.map do |r|
@@ -52,9 +56,9 @@ class ReportBuilder
   def format_row r
     r.map.with_index do |value, i|
       if value=='-'
-        {value: value, formatted: value, style: '' }
+        {value: value, formatted: value, style: '' , sheet_use: :value }
       else
-        { value: value, formatted: format_column(i,value), style: style_column(i,value) }
+        { value: value, formatted: format_column(i,value), style: style_column(i,value) , sheet_use: sheet_use(i) }
       end
     end
   end
@@ -70,12 +74,21 @@ class ReportBuilder
     end
   end
 
+  def sheet_use i
+    case header[i]
+    when 'Uptime %', 'Adjusted Uptime %'
+      :value
+    else
+      :formatted
+    end
+  end
+
   def style_column i, value
     case header[i]
     when 'Uptime %', 'Adjusted Uptime %'
-      if value < 99.95
+      if value < 0.9995
         'red'
-      elsif value < 100.00
+      elsif value < 1.0
         'green'
       else
         'blue'
@@ -96,16 +109,16 @@ class ReportBuilder
     unknown=data_rows.sum { |r| r[index('Unknown')] }
     uptime=data_rows.sum { |r| r[index('Uptime')] }
     monitored = downtime + uptime
-    uptime_percentage= monitored>0 ? (uptime * 100.0 / monitored) : 0
+    uptime_percentage= ratio uptime , monitored
 
     adj_outages=data_rows.sum { |r| r[index('Adjusted Outages')] }
     adj_downtime=data_rows.sum { |r| r[index('Adjusted Downtime')] }
     adj_uptime=data_rows.sum { |r| r[index('Adjusted Uptime')] }
     adj_monitored = adj_downtime + adj_uptime
-    adj_uptime_percentage= adj_monitored>0 ? (adj_uptime * 100.0 / adj_monitored) : 0
+    adj_uptime_percentage= ratio adj_uptime, adj_monitored
 
     avg_response = data_rows.sum { |r| r[index('AVG Response')] * r[index('Uptime')] }
-    avg_response = uptime>0 ? avg_response / uptime : 0
+    avg_response = ratio  avg_response , uptime
 
     ["rows: #{data_rows.count}",outages, downtime, unknown, uptime, uptime_percentage,adj_outages, adj_downtime, adj_uptime, adj_uptime_percentage, avg_response ]
   end
@@ -115,7 +128,7 @@ class ReportBuilder
   end
 
   def percentage_format p
-    format("%.3f %", p )
+    format("%.3f %", p * 100.0 )
   end
 
 end
