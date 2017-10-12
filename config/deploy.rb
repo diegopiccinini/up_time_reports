@@ -5,7 +5,7 @@ set :application, "up_time_reports"
 set :repo_url, "git@github.com:diegopiccinini/up_time_reports.git"
 
 set :rvm_type, :system
-set :rvm_ruby_version, '2.4.1'
+set :rvm_ruby_version, '2.4.1@rails-5.1.4'
 
 # Default branch is :master
 ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
