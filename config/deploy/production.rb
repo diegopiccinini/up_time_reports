@@ -7,6 +7,7 @@
 # server "example.com", user: "deploy", roles: %w{app web}, other_property: :other_value
 # server "db.example.com", user: "deploy", roles: %w{db}
 
+server 'uptime-reports.bookingbug.com', user: 'bbug', roles: %w{app db web}
 
 
 # role-based syntax
@@ -32,6 +33,7 @@
 # Feel free to add new variables to customise your setup.
 
 
+set :linked_files, fetch(:linked_files, []).push('.env.production')
 
 # Custom SSH Options
 # ==================
