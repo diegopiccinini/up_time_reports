@@ -33,8 +33,6 @@ server 'uptime-reports.bookingbug.com', user: 'bbug', roles: %w{app db web}
 # Feel free to add new variables to customise your setup.
 
 
-set :linked_files, fetch(:linked_files, []).push('.env.production')
-
 # Custom SSH Options
 # ==================
 # You may pass any option but keep in mind that net/ssh understands a
