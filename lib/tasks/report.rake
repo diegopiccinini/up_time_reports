@@ -41,7 +41,7 @@ namespace :report do
   desc "execute the cron"
   task cron: :environment do
 
-    puts "There is not a cron to run" if Cron.to_run.count<1
+    puts "#{Time.now.to_s} There is not a cron to run" if Cron.to_run.count<1
 
     History.verbose= true
     Cron.to_run.each do |cron|
