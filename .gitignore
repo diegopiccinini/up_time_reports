@@ -25,3 +25,4 @@
 /config/database.yml
 /config/secrets.yml
 /out.txt
+/public/assets
