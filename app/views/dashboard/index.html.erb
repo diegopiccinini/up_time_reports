@@ -1,0 +1,34 @@
+<h1>Dashboard</h1>
+<div class="row">
+  <div class="col-sm-6">
+  <%= render partial: "vpcs", locals: { global_report: @latest_global_daily, reports: @daily_reports } %>
+  </div>
+  <div class="col-sm-6">
+  <%= render partial: "vpcs", locals: { global_report: @latest_global_weekly, reports: @weekly_reports } %>
+  </div>
+</div>
+
+<div class="card-group">
+  <div class="card">
+    <div class="card-header">Global Reports</div>
+    <table class="table">
+      <thead class="thead-inverse">
+        <tr>
+          <th>Content</th>
+          <th>Uptime</th>
+          <th>AVG Response</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @global_reports.each do |g| %>
+          <tr class="table-info">
+            <td><%= g.name %></td>
+            <td><%= g.built_data :formatted_totals,  'Adjusted Uptime %' %></td>
+            <td><%= g.built_data :formatted_totals, 'AVG Response' %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+

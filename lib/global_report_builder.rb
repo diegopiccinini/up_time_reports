@@ -1,4 +1,3 @@
-
 class GlobalReportBuilder < ReportBuilder
 
   def spreadsheet_name

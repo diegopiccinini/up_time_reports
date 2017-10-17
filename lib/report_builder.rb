@@ -120,7 +120,7 @@ class ReportBuilder
     avg_response = data_rows.sum { |r| r[index('AVG Response')] * r[index('Uptime')] }
     avg_response = ratio  avg_response , uptime
 
-    ["rows: #{data_rows.count}",outages, downtime, unknown, uptime, uptime_percentage,adj_outages, adj_downtime, adj_uptime, adj_uptime_percentage, avg_response ]
+    ["rows: #{data_rows.count}",outages, downtime, unknown, uptime, uptime_percentage,adj_outages, adj_downtime, adj_uptime, adj_uptime_percentage, avg_response.to_i ]
   end
 
   def index field

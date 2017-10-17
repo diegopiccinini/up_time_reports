@@ -20,6 +20,7 @@ class GlobalReport < ApplicationRecord
   scope :outages_saved, -> { where( status: 'outages saved' ) }
   scope :vpc_reports_built, -> { where( status: 'vpc reports built' ) }
   scope :json_ready, -> { where( status: 'JSON ready') }
+  scope :built, -> { where( status: ['JSON ready']) }
 
   def self.start date: , period: 'day', resolution: 'hour'
 
@@ -109,9 +110,12 @@ class GlobalReport < ApplicationRecord
 
   end
 
+  def builder
+    GlobalReportBuilder.new self
+  end
+
   def build
     History.write "** Building Global #{period} report on #{start_date} with resolution #{resolution}",2,2
-    builder = GlobalReportBuilder.new self
     builder.build
   end
 
@@ -121,6 +125,10 @@ class GlobalReport < ApplicationRecord
 
   def name
     "#{period.capitalize} Report by #{resolution.capitalize} Resolution, on #{start_date.to_s}"
+  end
+
+  def built_data data_type, header_name, field=:formatted
+    data_hash[data_type][builder.index header_name ][field]
   end
 
   private

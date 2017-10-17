@@ -85,8 +85,15 @@ class Report < ApplicationRecord
     end
   end
 
+  def builder
+    VpcReportBuilder.new self
+  end
+
+  def built_data data_type, header_name, field=:formatted
+    data_hash[data_type][builder.index header_name ][field]
+  end
+
   def build
-    builder = VpcReportBuilder.new self
     builder.build
   end
 
