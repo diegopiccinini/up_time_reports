@@ -1,6 +1,6 @@
 class DashboardController < ApplicationController
   layout 'frontend'
-  http_basic_authenticate_with name: "bbug", password: "aszx12qw"
+  http_basic_authenticate_with name: ENV['FRONTEND_USER'], password: ENV['FRONTEND_PASS']
 
   def index
     @global_reports=GlobalReport.built.order(updated_at: :desc).all
