@@ -38,4 +38,5 @@ append :linked_dirs, "log", "tmp"
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
+set :puma_state, "#{shared_path}/tmp/pids/puma.state"
 set :puma_conf, "#{shared_path}/config/puma.rb"
