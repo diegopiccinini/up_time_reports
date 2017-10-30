@@ -36,7 +36,6 @@ require "capistrano/rvm"
 
 require 'capistrano/rails'
 require 'capistrano/puma'
-install_plugin Capistrano::Puma  # Default puma tasks
 
 require 'capistrano/locally'
 
