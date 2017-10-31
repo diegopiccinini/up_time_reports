@@ -1,10 +1,20 @@
 <h1>Dashboard</h1>
+
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
+  <div class="container-fluid">
+    <ul class="nav navbar-nav navbar-right">
+      <li>
+        <%= link_to('Logout', destroy_user_session_path, method: :delete, class: 'btn btn-info') %>
+      </li>
+    </ul>
+  </div>
+</div>
 <div class="row">
   <div class="col-sm-6">
-  <%= render partial: "vpcs", locals: { global_report: @latest_global_daily, reports: @daily_reports } %>
+    <%= render partial: "vpcs", locals: { global_report: @latest_global_daily, reports: @daily_reports } %>
   </div>
   <div class="col-sm-6">
-  <%= render partial: "vpcs", locals: { global_report: @latest_global_weekly, reports: @weekly_reports } %>
+    <%= render partial: "vpcs", locals: { global_report: @latest_global_weekly, reports: @weekly_reports } %>
   </div>
 </div>
 
