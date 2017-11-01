@@ -3,3 +3,35 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 @import "bootstrap";
 
+.table {
+  border: 1px solid grey;
+  background-color: grey;
+
+  .red {
+    background-color: #f99393;
+    text-align: right;
+  }
+
+  .blue {
+    background-color: rgba(141, 213, 255, 1);
+    text-align: right;
+  }
+  .green {
+    background-color: #8cbf8c;
+    text-align: right;
+  }
+
+  td {
+    background-color: white;
+    text-align: center;
+  }
+  thead th {
+    text-align: center;
+  }
+}
+.tdcenter {
+  text-align: center;
+}
+.tdleft {
+  text-align: left;
+}

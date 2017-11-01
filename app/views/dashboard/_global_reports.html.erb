@@ -1,10 +1,9 @@
-<% if global_report %>
   <div class="card">
-    <h3 class="card-header"><%= global_report.name %></h3>
+    <h3 class="card-header"><%= title %></h3>
     <table class="table">
       <thead class="thead-inverse">
         <tr>
-          <th>VPC</th>
+          <th>Start Date</th>
           <th>Uptime</th>
           <th>AVG Response</th>
         </tr>
@@ -12,7 +11,7 @@
       <tbody>
         <% reports.each do |r| %>
           <tr class="table-info">
-            <td><%= r.vpc.name %></td>
+            <td><%= r.start_date.strftime("%d/%m/%Y") %></td>
             <td class="<%= r.built_data :formatted_totals, 'Adjusted Uptime %', :style %>"><%= r.built_data :formatted_totals,  'Adjusted Uptime %' %></td>
             <td><%= r.built_data :formatted_totals, 'AVG Response' %></td>
           </tr>
@@ -20,4 +19,3 @@
       </tbody>
     </table>
   </div>
-<% end %>

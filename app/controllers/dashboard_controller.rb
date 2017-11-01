@@ -4,7 +4,8 @@ class DashboardController < ApplicationController
 
 
   def index
-    @global_reports=GlobalReport.built.order(updated_at: :desc).all
+    @weekly_global_reports=GlobalReport.built.where(period: 'week').order(updated_at: :desc).limit(10).all
+    @daily_global_reports=GlobalReport.built.where(period: 'day').order(updated_at: :desc).limit(10).all
 
     @latest_global_daily=GlobalReport.where(period: 'day').built.last
     @daily_reports=[]
