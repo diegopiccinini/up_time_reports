@@ -9,21 +9,22 @@
 
   .red {
     background-color: #f99393;
-    text-align: right;
+    text-align: center;
   }
 
   .blue {
     background-color: rgba(141, 213, 255, 1);
-    text-align: right;
+    text-align: center;
   }
   .green {
     background-color: #8cbf8c;
-    text-align: right;
+    text-align: center;
   }
 
   td {
     background-color: white;
     text-align: center;
+    font-size: 12px;
   }
   thead th {
     text-align: center;
@@ -34,4 +35,39 @@
 }
 .tdleft {
   text-align: left;
+}
+
+
+.report-table {
+  .red  {
+    background-color: #f99393;
+    text-align: center;
+  }
+
+  .blue {
+    background-color: rgba(141, 213, 255, 1);
+    text-align: center;
+  }
+  .green {
+    background-color: #8cbf8c;
+    text-align: center;
+  }
+
+  .tdcenter {
+    text-align: center;
+  }
+  .tdleft {
+    text-align: left;
+  }
+  width: 90%;
+  border: 1px solid grey;
+  background-color: grey;
+  td {
+    background-color: white;
+    font-size: 14px;
+    border-bottom: 1px solid #ccc;
+  }
+  thead th {
+    text-align: center;
+  }
 }

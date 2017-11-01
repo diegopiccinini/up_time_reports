@@ -1,0 +1,4 @@
+  <h1><%= link_to @report.vpc.name, @report.vpc %></h1>
+    <%= render "shared/menu" %>
+  <h2><%= @report.global_report.name %></h2>
+  <%= render partial: 'admin/reports/data', locals: { report:  @report.data_hash } %>

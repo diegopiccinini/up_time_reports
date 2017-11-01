@@ -1,3 +1,20 @@
-<h1><%= @vpc.name %></h1>
-<h2>Reports</h2>
-<%= link_to 'Back', vpcs_path %>
+<div class="container">
+  <h1><%= @vpc.name %> Uptime Reports</h1>
+  <%= render "shared/menu" %>
+  <%= month_calendar events: @vpc.reports.json_ready.each do |start_date, reports| %>
+    <h3><%= start_date.day %></h3>
+    <table>
+      <% reports.each do |r| %>
+        <tr>
+          <td>
+            <%= link_to r.period, vpc_report_path(@vpc,r) %>
+          </td>
+          <td class="<%= r.built_data :formatted_totals, 'Adjusted Uptime %', :style %> small">
+            <%= r.built_data :formatted_totals,  'Adjusted Uptime %' %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
+  <%= link_to 'Back', vpcs_path %>
+</div>

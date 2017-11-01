@@ -12,7 +12,7 @@
       <tbody>
         <% reports.each do |r| %>
           <tr class="table-info">
-            <td><%= r.vpc.name %></td>
+            <td><%= link_to r.vpc.name, vpc_report_path(r.vpc,r) %></td>
             <td class="<%= r.built_data :formatted_totals, 'Adjusted Uptime %', :style %>"><%= r.built_data :formatted_totals,  'Adjusted Uptime %' %></td>
             <td><%= r.built_data :formatted_totals, 'AVG Response' %></td>
           </tr>

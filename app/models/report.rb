@@ -181,4 +181,7 @@ class Report < ApplicationRecord
     "#{vpc.name} (#{vpc.hostname}) #{global_report.name}"
   end
 
+  def start_time
+    start_date
+  end
 end

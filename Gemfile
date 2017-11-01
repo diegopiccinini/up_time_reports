@@ -46,7 +46,7 @@ gem 'sucker_punch', '~> 2.0'
 gem 'activeadmin', github: 'activeadmin'
 gem 'devise'
 gem 'omniauth-google-oauth2'
-
+gem 'simple_calendar'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
