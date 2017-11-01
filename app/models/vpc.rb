@@ -1,6 +1,7 @@
 class Vpc < ApplicationRecord
   acts_as_paranoid
   belongs_to :customer
+  has_many :reports
 
   scope :created_before, -> (from) { where('created <= ?',from) }
 

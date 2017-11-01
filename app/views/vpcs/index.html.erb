@@ -1,0 +1,23 @@
+<div class="container">
+  <h1>VPCs</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Hostname</th>
+        <th>Reports</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @vpcs.each do |vpc| %>
+        <tr>
+          <td><%= link_to vpc.name, vpc %></td>
+          <td><%= vpc.hostname %></td>
+          <td><%= vpc.reports.json_ready.count %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
