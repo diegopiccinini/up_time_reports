@@ -20,6 +20,10 @@ class VpcsController < ApplicationController
     def set_vpc
       @vpc = Vpc.find(params[:id])
       params[:start_date]=@vpc.reports.json_ready.order(updated_at: :desc).limit(1).first.start_date.to_s unless params[:start_date]
+      start_date=Date.parse(params[:start_date]).at_beginning_of_month
+
+      global_report_ids=GlobalReport.where(start_date: start_date..start_date.next_month).ids
+      @reports=@vpc.reports.json_ready.where(global_report_id: global_report_ids ).all
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

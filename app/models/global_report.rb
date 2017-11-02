@@ -131,6 +131,10 @@ class GlobalReport < ApplicationRecord
     data_hash[data_type][builder.index header_name ][field]
   end
 
+  def start_time
+    start_date
+  end
+
   private
 
   def validate_period

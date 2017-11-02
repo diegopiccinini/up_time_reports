@@ -27,7 +27,9 @@
     font-size: 12px;
   }
   thead th {
+    font-size: 14px;
     text-align: center;
+    color: white;
   }
 }
 .tdcenter {
@@ -59,15 +61,17 @@
   .tdleft {
     text-align: left;
   }
-  width: 90%;
+  width: 100%;
   border: 1px solid grey;
   background-color: grey;
   td {
     background-color: white;
-    font-size: 14px;
+    font-size: 12px;
     border-bottom: 1px solid #ccc;
   }
   thead th {
+    font-size: 12px;
     text-align: center;
+    color: white;
   }
 }
