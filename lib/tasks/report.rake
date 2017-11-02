@@ -7,7 +7,7 @@ namespace :report do
   desc "To creates yesterday reports"
   task yesterday: :environment do
     History.verbose= true
-    ReportGeneratorJob.perform_now(Date.yesterday)
+    ReportGeneratorJob.perform_now(date: Date.yesterday)
     History.verbose= false
   end
 
@@ -16,12 +16,12 @@ namespace :report do
 
     date=Date.parse args.day
     raise "I haven't the time machine to get a report for #{date}" if date>Date.today
-    ReportGeneratorJob.perform_now(date)
+    ReportGeneratorJob.perform_now(date: date)
 
   end
 
   desc "Create a daily reports between a period"
-  task :by_period, [:from,:to] => :environment do |t, args|
+  task :by_day_in_period, [:from,:to] => :environment do |t, args|
 
     from=Date.parse args.from
     to=Date.parse args.to
@@ -31,9 +31,27 @@ namespace :report do
 
     History.verbose= true
     while from<to do
-      ReportGeneratorJob.perform_async(from)
+      ReportGeneratorJob.perform_now(date: from)
       from+=1
     end
+    History.verbose= false
+
+  end
+
+  desc "Create a report by period and resolution params [date,period,resolution]"
+  task :by_period_and_resolution, [:date,:period,:resolution] => :environment do |t, args|
+
+    date=Date.parse args.date
+    period=args.period
+    resolution=args.resolution
+
+    validation={ 'day' => ['hour'], 'week' => ['day'], 'month' => ['day','week'], 'year' => ['month'] }
+    raise "I haven't the time machine to get a report for #{date}" if date>Date.today
+    raise "#{period} is not a valid period" unless validation.keys.include?period
+    raise "The resolution #{resolution} is invalid" unless validation[period].include?resolution
+
+    History.verbose= true
+    ReportGeneratorJob.perform_now(date: date, resolution: resolution, period: period)
     History.verbose= false
 
   end
