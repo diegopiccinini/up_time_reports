@@ -11,7 +11,7 @@
       <tbody>
         <% reports.each do |r| %>
           <tr class="table-info">
-            <td><%= link_to r.start_date.strftime("%d/%m/%Y") , r %></td>
+            <td><%= link_to r.start_date.strftime("%d/%m/%Y") , r, title: "#{r.resolution.capitalize} resolution" %></td>
             <td class="<%= r.built_data :formatted_totals, 'Adjusted Uptime %', :style %>"><%= r.built_data :formatted_totals,  'Adjusted Uptime %' %></td>
             <td><%= r.built_data :formatted_totals, 'AVG Response' %></td>
           </tr>
