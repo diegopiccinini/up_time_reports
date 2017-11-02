@@ -31,16 +31,20 @@
     text-align: center;
     color: white;
   }
-}
-.tdcenter {
-  text-align: center;
-}
-.tdleft {
-  text-align: left;
+  .tdcenter {
+    text-align: center;
+  }
+  .tdleft {
+    text-align: left;
+  }
 }
 
 
 .report-table {
+  width: 100%;
+  border: 1px solid grey;
+  background-color: grey;
+  font-size: 12px;
   .red  {
     background-color: #f99393;
     text-align: center;
@@ -61,17 +65,32 @@
   .tdleft {
     text-align: left;
   }
-  width: 100%;
-  border: 1px solid grey;
-  background-color: grey;
   td {
     background-color: white;
     font-size: 12px;
-    border-bottom: 1px solid #ccc;
+    border: 2px solid grey;
   }
   thead th {
-    font-size: 12px;
     text-align: center;
-    color: white;
+    background-color: #c3d9ff;
+    border: 2px solid grey;
   }
 }
+
+.simple-calendar {
+  .calendar-heading {
+    margin: 10px;
+    padding: 5px;
+    text-align: center;
+    .calendar-title {
+      padding: 5px 15px 5px 15px;
+      font-size: 18px;
+    }
+    a {
+      border: 1px solid rgba(141, 213, 255, 1);
+      padding: 5px 15px 5px 15px;
+    }
+  }
+}
+
+
