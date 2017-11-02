@@ -3,6 +3,7 @@
 <div class="row">
     <%= render partial: "global_reports", locals: { title: 'Daily Global Reports', reports: @daily_global_reports } %>
     <%= render partial: "global_reports", locals: { title: 'Weekly Global Reports', reports: @weekly_global_reports } %>
+    <%= render partial: "global_reports", locals: { title: 'Monthly Global Reports', reports: @monthly_global_reports } %>
 </div>
 <div class="row">
     <%= render partial: "vpcs", locals: { global_report: @latest_global_daily, reports: @daily_reports } %>
