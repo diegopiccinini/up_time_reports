@@ -9,6 +9,8 @@
     <%= link_to 'VPCs', vpcs_path, class: 'btn btn-info'%>
   </span>
   <span class="navbar-text">
-    <%= link_to 'Logout', '/users', method: :delete ,class: 'btn btn-info' %>
+    <%= form_tag(destroy_user_session_path, method: :delete ) do |f| %>
+      <%= submit_tag "Log out", class: 'btn btn-info' %>
+    <% end %>
   </span>
 </div>

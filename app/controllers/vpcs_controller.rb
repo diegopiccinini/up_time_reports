@@ -20,7 +20,7 @@ class VpcsController < ApplicationController
     def set_vpc
       @vpc = Vpc.find(params[:id])
       unless params[:start_date]
-        last_report=@vpc.reports.json_ready.order(updated_at: :desc).limit(1).first
+        last_report=@vpc.reports.json_ready.joins(:global_report).order("global_reports.start_date desc").limit(1).first
         params[:start_date]= last_report ? last_report.start_date.to_s : Date.today.to_s
       end
       start_date=Date.parse(params[:start_date]).at_beginning_of_month
