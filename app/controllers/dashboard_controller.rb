@@ -7,6 +7,7 @@ class DashboardController < ApplicationController
     @weekly_global_reports=GlobalReport.built.where(period: 'week').order(updated_at: :desc).limit(10).all
     @daily_global_reports=GlobalReport.built.where(period: 'day').order(updated_at: :desc).limit(10).all
     @monthly_global_reports=GlobalReport.built.where(period: 'month').order(updated_at: :desc).limit(10).all
+    @yearly_global_reports=GlobalReport.built.where(period: 'year').order(updated_at: :desc).limit(10).all
 
     @latest_global_daily=GlobalReport.where(period: 'day').built.last
     @daily_reports=[]

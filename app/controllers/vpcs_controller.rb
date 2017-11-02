@@ -19,7 +19,10 @@ class VpcsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_vpc
       @vpc = Vpc.find(params[:id])
-      params[:start_date]=@vpc.reports.json_ready.order(updated_at: :desc).limit(1).first.start_date.to_s unless params[:start_date]
+      unless params[:start_date]
+        last_report=@vpc.reports.json_ready.order(updated_at: :desc).limit(1).first
+        params[:start_date]= last_report ? last_report.start_date.to_s : Date.today.to_s
+      end
       start_date=Date.parse(params[:start_date]).at_beginning_of_month
 
       global_report_ids=GlobalReport.where(start_date: start_date..start_date.next_month).ids
