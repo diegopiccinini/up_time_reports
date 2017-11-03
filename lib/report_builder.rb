@@ -5,6 +5,7 @@ class ReportBuilder
   def initialize report
     @report = report
     @data= { metadata: { title: spreadsheet_name }, rows: [] }
+    @colors_interval=GlobalSetting.get 'percent_interval_colors'
   end
 
   def metadata
@@ -86,9 +87,9 @@ class ReportBuilder
   def style_column i, value
     case header[i]
     when 'Uptime %', 'Adjusted Uptime %'
-      if value < 0.9995
+      if value < @colors_interval[:min]
         'red'
-      elsif value < 1.0
+      elsif value < @colors_interval[:max]
         'green'
       else
         'blue'

@@ -1,5 +1,7 @@
 ActiveAdmin.register Report do
+
   permit_params :status
+
   form title: 'Report edit' do |f|
     inputs 'Details' do
       input :status
