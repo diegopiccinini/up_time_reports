@@ -1,23 +1,25 @@
 <% if global_report %>
-  <div class="card">
-    <h3 class="card-header"><%= global_report.name %></h3>
-    <table class="table">
-      <thead class="thead-inverse">
-        <tr>
-          <th>VPC</th>
-          <th>Uptime</th>
-          <th>AVG Response</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% reports.each do |r| %>
-          <tr class="table-info">
-            <td><%= link_to r.vpc.name, vpc_report_path(r.vpc,r) %></td>
-            <td class="<%= r.built_data :formatted_totals, 'Adjusted Uptime %', :style %>"><%= r.built_data :formatted_totals,  'Adjusted Uptime %' %></td>
-            <td><%= r.built_data :formatted_totals, 'AVG Response' %></td>
+  <div class="col-md-6">
+    <div class="card">
+      <h3 class="card-header"><%= global_report.name %></h3>
+      <table class="table">
+        <thead class="thead-inverse">
+          <tr>
+            <th>VPC</th>
+            <th>Uptime</th>
+            <th>AVG Response</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% reports.each do |r| %>
+            <tr class="table-info">
+              <td><%= link_to r.vpc.name, vpc_report_path(r.vpc,r) %></td>
+              <td class="<%= r.built_data :formatted_totals, 'Adjusted Uptime %', :style %>"><%= r.built_data :formatted_totals,  'Adjusted Uptime %' %></td>
+              <td><%= r.built_data :formatted_totals, 'AVG Response' %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
 <% end %>

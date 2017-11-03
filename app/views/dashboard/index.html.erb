@@ -6,7 +6,7 @@
     <%= render partial: "global_reports", locals: { title: 'Monthly Global Reports', reports: @monthly_global_reports } %>
     <%= render partial: "global_reports", locals: { title: 'Yearly Global Reports', reports: @yearly_global_reports } %>
 </div>
-<div class="row">
+<div class="row text-center">
     <%= render partial: "vpcs", locals: { global_report: @latest_global_daily, reports: @daily_reports } %>
     <%= render partial: "vpcs", locals: { global_report: @latest_global_weekly, reports: @weekly_reports } %>
 </div>
