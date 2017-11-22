@@ -5,7 +5,7 @@ class Outage < ApplicationRecord
   scope :up, -> (from,to) { by_period(from,to).where(status: 'up') }
   scope :down, -> (from,to) { by_period(from,to).where(status: 'down') }
   scope :unknown, -> (from,to) { by_period(from,to).where(status: 'unknown') }
-  scope :adjusted, -> { where( "timeto > timefrom + interval '?' second and status = ? ", GlobalSetting.adjust_interval,'down' ) }
+  scope :adjusted, -> { where( "timeto >= timefrom + interval '?' second and status = ? ", GlobalSetting.adjust_interval,'down' ) }
 
   def interval
     (timeto - timefrom).to_i
