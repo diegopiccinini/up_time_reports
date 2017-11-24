@@ -1,15 +1,3 @@
 ActiveAdmin.register Cron do
-# See permitted parameters documentation:
-# https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
-#
-permit_params :status
-#
-# or
-#
-# permit_params do
-#   permitted = [:permitted, :attributes]
-#   permitted << :other if params[:action] == 'create' && current_user.admin?
-#   permitted
-# end
-
+  permit_params :status, :hour, :day_of_week, :day_of_month , :month, :enabled
 end
