@@ -89,7 +89,12 @@ class CronTest < ActiveSupport::TestCase
     assert cron.check_next_execution!> date.to_time
     assert_equal cron.check_next_execution!.hour, 8
     assert_equal cron.check_next_execution!.mday, 1
-    assert cron.check_next_execution!.month>=date.month
+    if date.month<12
+      assert cron.check_next_execution!.month>=date.month
+    else
+      assert cron.check_next_execution!.month<date.month
+    end
+
 
   end
 

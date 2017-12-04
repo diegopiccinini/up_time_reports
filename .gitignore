@@ -26,3 +26,4 @@
 /config/secrets.yml
 /out.txt
 /public/assets
+/client_secret.json

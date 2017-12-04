@@ -15,3 +15,7 @@ two:
 three:
   name: timezone
   data: "{\"value\": \"UTC\" }"
+
+color:
+  name: percent_interval_colors
+  data: "{\"min\": 0.9995, \"max\": 1 }"

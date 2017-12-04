@@ -9,7 +9,6 @@ class VpcReportBuilderTest < ActiveSupport::TestCase
     assert_equal global.data[:rows].count, rows
   end
 
-
   test "#build two report" do
     builder=by_report :two
     total_asserts builder, 7
@@ -35,6 +34,5 @@ class VpcReportBuilderTest < ActiveSupport::TestCase
 
     total_asserts builder, 12
   end
-
 
 end

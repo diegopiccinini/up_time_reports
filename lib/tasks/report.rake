@@ -98,4 +98,18 @@ namespace :report do
 
   end
 
+  desc "Export Reports to Fixtures by Global Report id"
+  task :to_fixtures, [:id] => :environment do |t, args|
+    global_report=GlobalReport.find args.id
+
+    fixture_file= File.join(Rails.root, 'test','fixtures','global_reports.yml')
+    attrs=global_report.attributes
+    attrs.delete_if { |k,v| v.blank? }
+    output= { "real_#{global_report.id}" => attrs }
+    File.open(fixture_file,'a') do |f|
+      f << output.to_yaml.gsub(/^--- \n/,'') + "\n"
+      f.close
+    end
+
+  end
 end
