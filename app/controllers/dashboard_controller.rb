@@ -11,10 +11,10 @@ class DashboardController < ApplicationController
 
     @latest_global_daily=GlobalReport.where(period: 'day').built.order(start_date: :desc).limit(1).first
     @daily_reports=[]
-    @daily_reports=@latest_global_daily.reports.includes(:vpc).order('vpcs.name') if @latest_global_daily
+    @daily_reports=@latest_global_daily.reports.where(status: 'JSON ready').includes(:vpc).order('vpcs.name') if @latest_global_daily
 
     @latest_global_weekly=GlobalReport.where(period: 'week').built.order(start_date: :desc).limit(1).first
     @weekly_reports=[]
-    @weekly_reports=@latest_global_weekly.reports.includes(:vpc).order('vpcs.name') if @latest_global_weekly
+    @weekly_reports=@latest_global_weekly.reports.includes(:vpc).where(status: 'JSON ready').order('vpcs.name') if @latest_global_weekly
   end
 end

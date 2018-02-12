@@ -9,6 +9,8 @@ ActiveAdmin.register Report do
     actions
   end
 
+  filter :vpc
+
   index do
     selectable_column
     column :vpc

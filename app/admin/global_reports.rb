@@ -6,6 +6,13 @@ ActiveAdmin.register GlobalReport do
     end
     actions
   end
+
+  filter :name
+  filter :period
+  filter :resolution
+  filter :start_date
+  filter :status
+
   index do
     selectable_column
     column :name
