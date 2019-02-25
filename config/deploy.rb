@@ -1,5 +1,5 @@
 # config valid only for current version of Capistrano
-lock "3.9.1"
+lock "3.11.0"
 
 set :application, "up_time_reports"
 set :repo_url, "git@github.com:diegopiccinini/up_time_reports.git"
