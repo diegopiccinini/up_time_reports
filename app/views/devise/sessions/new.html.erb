@@ -18,7 +18,7 @@
 <% if user_signed_in?  %>
   <p>Welcome back, <%= current_user.name %>!</p>
 <% else  %>
-  <p><%= link_to 'Login with Google+', user_google_oauth2_omniauth_authorize_path ,class: 'btn btn-danger' %></p>
+  <p><%= link_to 'Login with Central Auth', user_central_auth_omniauth_authorize_path ,class: 'btn btn-success' %></p>
 <% end %>
 </main>
 </div>

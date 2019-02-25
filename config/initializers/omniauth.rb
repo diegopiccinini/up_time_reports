@@ -1,3 +1,5 @@
+require 'omniauth/strategies/central_auth'
+
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :google_oauth2, ENV["GOOGLE_CLIENT_ID"], ENV["GOOGLE_CLIENT_SECRET"], skip_jwt: true
+  provider :central_auth, ENV["CENTRAL_AUTH_CLIENT_ID"], ENV["CENTRAL_AUTH_SECRET"]
 end
