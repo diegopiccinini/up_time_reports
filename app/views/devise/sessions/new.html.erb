@@ -1,24 +1,29 @@
-<div id="container" class="container">
-<header class="page-header" role="banner">
-  <h1><%= ENV['CUSTOM_DOMAIN_FILTER'].capitalize %> UpTime Reports</h1>
-</header>
+<div id="container" class="container login-wrapper fade-in">
+  <header class="page-header" role="banner">
+    <h1 class="login-brand"><%= ENV['CUSTOM_DOMAIN_FILTER'].capitalize %> UpTime Reports</h1>
+    <p>Read the uptime Pingdom reports</p>
+  </header>
 
-<main role="main">
-<%- if flash[:error].present? %>
-  <div class="alert alert-danger">
-    <%= flash[:error] %>
-  </div>
-<% end -%>
+  <main role="main" class="login">
+    <%- if flash[:error].present? %>
+      <div class="alert alert-danger">
+        <%= flash[:error] %>
+      </div>
+    <% end -%>
 
-<%- if flash[:notice].present? %>
-  <div class="alert alert-info">
-    <%= flash[:notice] %>
-  </div>
-<% end -%>
-<% if user_signed_in?  %>
-  <p>Welcome back, <%= current_user.name %>!</p>
-<% else  %>
-  <p><%= link_to 'Login with Central Auth', user_central_auth_omniauth_authorize_path ,class: 'btn btn-success' %></p>
-<% end %>
-</main>
+    <%- if flash[:notice].present? %>
+      <div class="alert alert-info">
+        <%= flash[:notice] %>
+      </div>
+    <% end -%>
+    <% if user_signed_in?  %>
+      <p>Welcome back, <%= current_user.name %>!</p>
+    <% else  %>
+      <p>
+      <%= link_to user_central_auth_omniauth_authorize_path, class: "action central_auth" do %>
+        <%= image_tag image_url('central_auth.png') %> Login with Central Authentication
+      <% end %>
+      </p>
+    <% end %>
+  </main>
 </div>
