@@ -237,7 +237,7 @@ GEM
       faraday (~> 0.13)
     popper_js (1.14.5)
     public_suffix (3.0.3)
-    puma (3.12.0)
+    puma (3.12.4)
     rack (2.0.6)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
@@ -389,7 +389,7 @@ DEPENDENCIES
   paranoia
   pg (~> 0.18)
   pingdom
-  puma (~> 3.7)
+  puma (~> 3.12)
   rails (~> 5.1.4)
   sass-rails (~> 5.0)
   selenium-webdriver
